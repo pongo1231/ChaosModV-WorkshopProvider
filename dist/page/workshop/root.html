@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chaos Workshop</title>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+
+    <style>
+    </style>
+</head>
+
+<body>
+    <h1>Your Submissions</h1>
+    <button id="submission_createnew" onclick="onclick_new()" hidden>Create New</button>
+    <br>
+
+    <br id="submissions_anchor">
+    <br>
+    <button onclick="onclick_logout()">Logout</button>
+
+    <script>
+function get_cookie(name)
+{
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2)
+        return parts.pop().split(';').shift();
+}
+
+function time_to_date(timestamp)
+{
+    let a = new Date(timestamp * 1000);
+    let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let year = a.getFullYear();
+    let month = months[a.getMonth()];
+    let date = a.getDate();
+    let hour = a.getHours();
+    let min = a.getMinutes();
+    let sec = a.getSeconds();
+    let time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+
+    return time;
+}
+
+function onclick_new(submission_id)
+{
+    location.href = "https://chaos.gopong.dev/workshop/view?submission_id=";
+}
+
+async function onclick_download(submission_id)
+{
+    const result = await fetch("https://chaos.gopong.dev/workshop/fetch_submission_data?uncompressed=yes&submission_id=" + submission_id, {method: "GET"});
+    const is_compressed = result.headers.get("compressed") == "yes";
+
+    const blob = await result.blob();
+    const href = await URL.createObjectURL(blob);
+    Object.assign(document.createElement('a'), {
+        href,
+        download: submission_id + (is_compressed ? ".zip.zst" : ".zip")
+    }).click();
+}
+
+function onclick_edit(submission_id)
+{
+    location.href = "https://chaos.gopong.dev/workshop/view?submission_id=" + submission_id;
+}
+
+function onclick_logout()
+{
+    document.cookie = "user_token=;path=/";
+    location.reload();
+}
+
+$(document).ready(async () =>
+{
+    const token = get_cookie("user_token");
+
+    let form_data = new FormData();
+    form_data.append("token", token);
+    const response = await fetch("https://chaos.gopong.dev/workshop/fetch_my_submissions", {method: "POST", body: form_data});
+    const json = await response.json();
+
+    if (json["success"] == null || !json["success"])
+        return;
+
+    if (json["submissions"] == null)
+    {
+        $("#submission_createnew").show();
+        return;
+    }
+
+const submission_entries = Object.entries(json["submissions"]);
+    for (const [submission_id, submission_data] of submission_entries)
+    {
+        $("<hr>").insertBefore("#submissions_anchor");
+        $("<p>Name: " + submission_data.name + "</p>").insertBefore("#submissions_anchor");
+        $("<p>Version: v" + submission_data.version + "</p>").insertBefore("#submissions_anchor");
+        $("<p>Description: " + (submission_data.description != null ? submission_data.description : "No Description") + "</p>").insertBefore("#submissions_anchor");
+        $("<p>Last updated: " + time_to_date(submission_data.lastupdated) + "</p>").insertBefore("#submissions_anchor");
+        $("<button onclick='onclick_download(\"" + submission_id + "\")'>Download</button>").insertBefore("#submissions_anchor");
+        $("<button onclick='onclick_edit(\"" + submission_id + "\")'>Edit</button>").insertBefore("#submissions_anchor");
+    }
+
+    if (submission_entries.length < 10)
+        $("#submission_createnew").show();
+});
+    </script>
+</body>
+
+</html>
