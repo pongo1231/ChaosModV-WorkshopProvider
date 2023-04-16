@@ -4,6 +4,8 @@ The backend for the workshop functionality in the [Chaos Mod](https://github.com
 
 This only runs on Linux. Windows support is not easily possible due to the libraries used.
 
+NOTE: This assumes the domain `gopong.dev` in several places. This will be resolved eventually.
+
 ## Building
 
 The following external dependencies are required:
