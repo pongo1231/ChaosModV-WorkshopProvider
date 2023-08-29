@@ -48,7 +48,7 @@ int main()
 	                       .use_ssl()
 	                       .https_mem_cert("cert.pem")
 	                       .https_mem_key("key.pem")
-	                       .content_size_limit(global_options.submission_max_total_size)
+	                       .content_size_limit(global_options.submission_max_total_size * 2.f)
 	                       .connection_timeout(global_options.connection_timeout);
 
 	chaosworkshop workshop;
