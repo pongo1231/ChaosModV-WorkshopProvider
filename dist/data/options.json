@@ -1,6 +1,6 @@
 {
     "port": 9907,
-    "connection_timeout": 20,
+    "connection_timeout": 60,
     "webhook_url": "",
     "user": {
         "max_submissions": 10,
