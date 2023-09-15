@@ -10,8 +10,25 @@
 
 static std::array<int, 2> unpacking_process_pipe;
 
+static size_t get_user_max_data_size(const std::string &user_id)
+{
+	if (user::contains_user_attribute(user_id, "custom_submission_size"))
+	{
+		auto custom_max_size = user::get_user_attribute(user_id, "custom_submission_size");
+		try
+		{
+			return std::stoull(custom_max_size.get<std::string>());
+		}
+		catch (...)
+		{
+		}
+	}
+
+	return global_options.submission_max_total_size;
+}
+
 static pid_t handle_unpacking(const std::string &data, const std::string &data_content_path,
-                              const std::string &data_path)
+                              const std::string &data_path, size_t max_data_size)
 {
 	file::write_file(data_path, data);
 
@@ -82,10 +99,13 @@ static pid_t handle_unpacking(const std::string &data, const std::string &data_c
 			exit(EXIT_FAILURE);
 		}
 
-		if (data_file_size > global_options.submission_max_total_size)
+		if (data_file_size > max_data_size)
 		{
 			write_pipe(
-			    json_formulate().set("success", false).set("reason", "Data exceeds size limit (5MB)").to_string());
+			    json_formulate()
+			        .set("success", false)
+			        .set("reason", "Data exceeds size limit (" + std::to_string(max_data_size / 1000 / 1000) + "MB)")
+			        .to_string());
 			exit(EXIT_FAILURE);
 		}
 
@@ -237,9 +257,14 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 	size_t data_file_len = 0;
 	if (!data.empty())
 	{
-		if (data.length() > global_options.submission_max_total_size)
+		auto max_data_size = get_user_max_data_size(user_id);
+		if (data.length() > max_data_size)
 			return make_response<string_response>(
-			    json_formulate().set("success", false).set("reason", "Data exceeds size limit (5MB)").to_string(), 400);
+			    json_formulate()
+			        .set("success", false)
+			        .set("reason", "Data exceeds size limit (" + std::to_string(max_data_size / 1000 / 1000) + " MB)")
+			        .to_string(),
+			    400);
 
 		std::string data_content_path = "/tmp/" + submission_id;
 		std::string data_path         = data_content_path + ".zip";
@@ -249,7 +274,7 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 			std::filesystem::remove_all(data_content_path);
 		};
 
-		auto unpacking_process_pid = handle_unpacking(data, data_content_path, data_path);
+		auto unpacking_process_pid = handle_unpacking(data, data_content_path, data_path, max_data_size);
 		if (unpacking_process_pid < 1)
 			return make_response<string_response>(json_formulate()
 			                                          .set("success", false)
@@ -393,7 +418,7 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 		webhook_options.description = "New file uploaded";
 		std::string size_text;
 		size_text.resize(64);
-		std::sprintf(size_text.data(), "Size: %.2fMB", data_file_len / 1024.f / 1024.f);
+		std::sprintf(size_text.data(), "Size: %.2fMB", data_file_len / 1000.f / 1000.f);
 		webhook_options.footer = size_text;
 	}
 	else if (webhook_options.fields.size() < 2)

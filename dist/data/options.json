@@ -13,7 +13,7 @@
         "max_description_newlines": 5,
         "max_changelog_length": 600,
         "max_changelog_newlines": 50,
-        "max_total_size": 5242880,
+        "max_total_size": 5000000,
         "max_file_count": 400,
         "max_file_name_length": 75,
         "unpack_timeout": 6
