@@ -78,14 +78,15 @@ static pid_t handle_unpacking(const std::string &data, const std::string &data_c
 			if (!entry.is_regular_file())
 				continue;
 
-			auto path      = entry.path();
-			auto extension = path.extension();
+			auto path              = entry.path();
+			auto relative_path_str = std::filesystem::relative(path, data_content_path).string();
+			auto extension         = path.extension();
 			if (!path.has_extension() || (extension != ".lua" && extension != ".mp3" && extension != ".txt")
-			    || path.string().length() > global_options.submission_max_file_name_length)
+			    || relative_path_str.length() > global_options.submission_max_file_name_length)
 			{
 				write_pipe(json_formulate()
 				               .set("success", false)
-				               .set("reason", "Data contains invalid files (" + path.string() + ")")
+				               .set("reason", "Data contains invalid files (" + relative_path_str + ")")
 				               .to_string());
 				exit(EXIT_FAILURE);
 			}
