@@ -112,7 +112,7 @@ static pid_t handle_unpacking(const std::string &data, const std::string &data_c
 			write_pipe(
 			    json_formulate()
 			        .set("success", false)
-			        .set("reason", "Data exceeds size limit (" + std::to_string(max_data_size / 1000 / 1000) + "MB)")
+			        .set("reason", "Data exceeds size limit (" + std::to_string(max_data_size / 1024 / 1024) + "MB)")
 			        .to_string());
 			exit(EXIT_FAILURE);
 		}
@@ -270,7 +270,7 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 			return make_response<string_response>(
 			    json_formulate()
 			        .set("success", false)
-			        .set("reason", "Data exceeds size limit (" + std::to_string(max_data_size / 1000 / 1000) + " MB)")
+			        .set("reason", "Data exceeds size limit (" + std::to_string(max_data_size / 1024 / 1024) + " MB)")
 			        .to_string(),
 			    400);
 
