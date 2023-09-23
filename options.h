@@ -1,6 +1,7 @@
 #pragma once
 
 #include "file.h"
+#include "logging.h"
 
 #include <nlohmann/json.hpp>
 
@@ -33,7 +34,7 @@ inline struct global_options
 		auto options_json = file::read_json_file(OPTIONS_FILE);
 		if (options_json.empty())
 		{
-			std::cout << "ERROR: Missing or invalid " OPTIONS_FILE "\n";
+			LOG(RED << "ERROR: Missing or invalid " OPTIONS_FILE "\n");
 			exit(EXIT_FAILURE);
 		}
 
@@ -48,7 +49,7 @@ inline struct global_options
 			}
 			catch (std::exception)
 			{
-				std::cout << "ERROR: Missing config option " << key << "\n";
+				LOG(RED << "ERROR: Missing config option " << key << "\n");
 				exit(EXIT_FAILURE);
 			}
 		};

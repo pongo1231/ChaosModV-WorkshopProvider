@@ -122,7 +122,7 @@ static pid_t handle_unpacking(const std::string &data, const std::string &data_c
 	}
 	catch (elz::zip_exception exception)
 	{
-		std::cout << exception.what() << "\n";
+		LOG(RED << exception.what() << "\n");
 		write_pipe(json_formulate().set("success", false).set("reason", "Data is not a valid zip file").to_string());
 		exit(EXIT_FAILURE);
 	}
