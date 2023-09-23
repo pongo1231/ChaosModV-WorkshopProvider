@@ -152,7 +152,7 @@ $(document).ready(async () =>
 
     $("#submission_name").attr("placeholder", json["submission"]["name"]);
     $("#submission_version").attr("placeholder",json["submission"]["version"]);
-    $("#submission_description").attr("placeholder",json["submission"]["description"]);
+    $("#submission_description").text(json["submission"]["description"]);
 });
     </script>
 </body>
