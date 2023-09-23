@@ -13,13 +13,15 @@ using namespace httpserver;
 
 static void log_request(const http_request &request)
 {
-	LOG("-----------------------------------------");
+	std::ostringstream log_builder;
+
+	log_builder << "-----------------------------------------\n";
 	auto time      = std::time(nullptr);
 	auto localtime = *std::localtime(&time);
-	LOG("Time: " << CYAN << std::put_time(&localtime, "%d-%m-%Y %H:%M:%S") << RESET);
+	log_builder << "Time: " << CYAN << std::put_time(&localtime, "%d-%m-%Y %H:%M:%S") << RESET << "\n";
 
-	LOG("Received " << RED << request.get_method() << " " << RESET << request.get_path() << " ("
-	                << request.get_requestor() << ")");
+	log_builder << "Received " << RED << request.get_method() << " " << RESET << request.get_path() << " ("
+	            << request.get_requestor() << ")\n";
 
 	std::ostringstream headers_str_builder;
 	for (const auto &pair : request.get_headers())
@@ -28,7 +30,7 @@ static void log_request(const http_request &request)
 	if (!headers_str.empty())
 	{
 		headers_str = headers_str.substr(0, headers_str.find_last_not_of(" | "));
-		LOG("Headers: " << headers_str << RESET);
+		log_builder << "Headers: " << headers_str << RESET << "\n";
 	}
 
 	std::ostringstream args_str_builder;
@@ -38,18 +40,20 @@ static void log_request(const http_request &request)
 	if (!args_str.empty())
 	{
 		args_str = args_str.substr(0, args_str.find_last_not_of(" | "));
-		LOG("Args: " << args_str << RESET);
+		log_builder << "Args: " << args_str << RESET << "\n";
 	}
 
 	if (!request.get_querystring().empty())
 	{
-		LOG("Query: " << BLUE << request.get_querystring() << RESET);
+		log_builder << "Query: " << BLUE << request.get_querystring() << RESET << "\n";
 	}
 
 	if (!request.get_content().empty())
 	{
-		LOG("Content: " << YELLOW << request.get_content() << RESET);
+		log_builder << "Content: " << YELLOW << request.get_content() << RESET << "\n";
 	}
+
+	LOG(log_builder.str());
 }
 
 class chaosworkshop : public http_resource
