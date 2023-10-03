@@ -1,4 +1,5 @@
 {
+    "domain": "",
     "port": 9907,
     "connection_timeout": 60,
     "webhook_url": "",

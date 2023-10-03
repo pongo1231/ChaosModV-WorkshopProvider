@@ -2,6 +2,8 @@
 
 #include "database.h"
 #include "endpoint.h"
+#include "file.h"
+#include "html_file.h"
 #include "json_response.h"
 #include "options.h"
 #include "submission.h"

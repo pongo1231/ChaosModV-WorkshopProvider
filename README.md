@@ -4,8 +4,6 @@ The backend for the workshop functionality in the [Chaos Mod](https://github.com
 
 This only runs on Linux. Windows support is not easily possible due to the libraries used.
 
-NOTE: This assumes the domain `gopong.dev` in several places. This will be resolved eventually.
-
 ## Building
 
 The following external dependencies are required:
@@ -23,4 +21,4 @@ cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
 ninja
 ```
 
-Make sure to also copy the content of the `dist/` folder into your build folder.
+Make sure to also copy the content of the `dist/` folder into your build folder and to set the `domain` option in the `data/options.json` file correspondingly.

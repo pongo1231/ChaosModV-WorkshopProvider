@@ -11,6 +11,7 @@
 
 inline struct global_options
 {
+	std::string domain;
 	unsigned short port;
 	size_t connection_timeout;
 	std::string webhook_url;
@@ -54,6 +55,7 @@ inline struct global_options
 			}
 		};
 
+		domain                              = get("domain");
 		port                                = get("port");
 		connection_timeout                  = get("connection_timeout");
 		webhook_url                         = get("webhook_url");

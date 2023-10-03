@@ -23,40 +23,36 @@
     </form>
 
     <script>
-function sha512(str)
-{
-    if (str == null || str === "")
-        return "";
+        function sha512(str) {
+            if (str == null || str === "")
+                return "";
 
-    return crypto.subtle.digest("SHA-512", new TextEncoder("utf-8").encode(str)).then(buf =>
-    {
-        return Array.prototype.map.call(new Uint8Array(buf), x=>(('00'+x.toString(16)).slice(-2))).join('');
-    });
-}
+            return crypto.subtle.digest("SHA-512", new TextEncoder("utf-8").encode(str)).then(buf => {
+                return Array.prototype.map.call(new Uint8Array(buf), x => (('00' + x.toString(16)).slice(-2))).join('');
+            });
+        }
 
-async function onclick_login()
-{
-    const name = $("#user_name").val();
-    const password = $("#user_password").val();
-    const hashed_password = await sha512(password);
+        async function onclick_login() {
+            const name = $("#user_name").val();
+            const password = $("#user_password").val();
+            const hashed_password = await sha512(password);
 
-    let form_data = new FormData();
-    form_data.append("name", name);
-    form_data.append("password", hashed_password);
-    const response = await fetch("https://chaos.gopong.dev/user/login", {method: "POST", body: form_data});
-    const json = await response.json();
+            let form_data = new FormData();
+            form_data.append("name", name);
+            form_data.append("password", hashed_password);
+            const response = await fetch("https://$$domain$$/user/login", { method: "POST", body: form_data });
+            const json = await response.json();
 
-    if (json["success"] == null || !json["success"])
-    {
-        $("#user_error_text").show();
-        $("#user_error_text").text("ERROR: " + json["reason"]);
-        return;
-    }
+            if (json["success"] == null || !json["success"]) {
+                $("#user_error_text").show();
+                $("#user_error_text").text("ERROR: " + json["reason"]);
+                return;
+            }
 
-    document.cookie = "user_token=" + json["token"] + ";path=/";
-    console.log(json["token"]);
-    location.reload();
-}
+            document.cookie = "user_token=" + json["token"] + ";path=/";
+            console.log(json["token"]);
+            location.reload();
+        }
     </script>
 </body>
 
