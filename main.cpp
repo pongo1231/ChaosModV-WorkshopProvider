@@ -34,7 +34,7 @@ static void log_request(const http_request &request)
 	}
 
 	std::ostringstream args_str_builder;
-	for (const auto &pair : request.get_args())
+	for (const auto &pair : request.get_args_flat())
 		headers_str_builder << MAGENTA << pair.first << ": " << GREEN << pair.second << RESET << " | ";
 	auto args_str = args_str_builder.str();
 	if (!args_str.empty())
@@ -63,7 +63,7 @@ class chaosworkshop : public http_resource
 	{
 	}
 
-	const std::shared_ptr<http_response> render_GET(const http_request &request) override
+	std::shared_ptr<http_response> render_GET(const http_request &request) override
 	{
 		log_request(request);
 
@@ -75,7 +75,7 @@ class chaosworkshop : public http_resource
 		return make_response<http_response>(404, http::http_utils::text_plain);
 	}
 
-	const std::shared_ptr<http_response> render_POST(const http_request &request) override
+	std::shared_ptr<http_response> render_POST(const http_request &request) override
 	{
 		log_request(request);
 
