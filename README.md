@@ -38,4 +38,4 @@ ninja
 
 Make sure to also copy the content of the `dist/` folder into your build folder and to set the `domain` option in the `data/options.json` file correspondingly.
 
-Currently you will also need a `cert.pem` and `key.pem` in the same directory as the binary (from e.g. letsencrypt).
+If `use_tls` is set you will need both a `cert.pem` and `key.pem` in the either same directory as the binary or the path given in the `DATA_ROOT` env var (from e.g. letsencrypt).
