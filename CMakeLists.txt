@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.7.2)
-include(FetchContent)
-include(ExternalProject)
 
-include(ProcessorCount)
-ProcessorCount(nproc)
+if (NOT USE_SYSTEM_LIBS)
+    include(FetchContent)
+    include(ExternalProject)
 
-set(MZ_ZLIB OFF)
+    include(ProcessorCount)
+    ProcessorCount(nproc)
+endif()
 
 if (USE_SYSTEM_LIBS)
     find_library(elzip NAMES elzip REQUIRED)
@@ -22,7 +23,12 @@ project(chaosworkshop CXX)
 file(GLOB src *.cpp *.h endpoints/*.cpp endpoints/*.h)
 add_executable(chaosworkshop ${src})
 
-find_program(MAKE_EXECUTABLE NAMES make)
+if (NOT USE_SYSTEM_LIBS)
+    find_program(MAKE_EXECUTABLE NAMES make)
+endif()
+
+set(INCLUDE_DIRS ${PROJECT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}/vendor)
 
 if (USE_SYSTEM_LIBS)
     find_library(microhttpd microhttpd REQUIRED)
@@ -35,6 +41,8 @@ else()
         BUILD_COMMAND ${MAKE_EXECUTABLE} -j${nproc}
         INSTALL_COMMAND ${MAKE_EXECUTABLE} install
     )
+    ExternalProject_Get_Property(libmicrohttpd SOURCE_DIR)
+    set(INCLUDE_DIRS ${INCLUDE_DIRS} ${SOURCE_DIR}/src/include)
     add_dependencies(chaosworkshop libmicrohttpd)
 endif()
 
@@ -51,6 +59,8 @@ else()
         BUILD_COMMAND cd build COMMAND ${MAKE_EXECUTABLE} -j${nproc}
         INSTALL_COMMAND cd build COMMAND ${MAKE_EXECUTABLE} install
     )
+    ExternalProject_Get_Property(libhttpserver SOURCE_DIR)
+    set(INCLUDE_DIRS ${INCLUDE_DIRS} ${SOURCE_DIR}/src)
     add_dependencies(libhttpserver libmicrohttpd)
     add_dependencies(chaosworkshop libhttpserver)
 endif()
@@ -63,10 +73,11 @@ set_property(TARGET chaosworkshop PROPERTY CXX_STANDARD 20)
 
 target_link_directories(chaosworkshop BEFORE PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/lib)
 
-set(INCLUDE_DIRS ${PROJECT_SOURCE_DIR}
-    ${PROJECT_SOURCE_DIR}/vendor)
 if (NOT USE_SYSTEM_LIBS)
     set(INCLUDE_DIRS ${INCLUDE_DIRS}
+        ${libmicrohttpd_install}/include
+        ${libhttpserver_install}/include
+        ${PROJECT_SOURCE_DIR}/vendor/sqlitecpp/include
         ${PROJECT_SOURCE_DIR}/vendor/sqlitecpp/include
         ${PROJECT_SOURCE_DIR}/vendor/11zip/include)
 endif()
