@@ -11,46 +11,37 @@
         pkgs = nixpkgs.legacyPackages.${system};
         libhttpserver = pkgs.stdenv.mkDerivation
           rec {
-            name = "libhttpserver";
+            pname = "libhttpserver";
             version = "0.19.0";
             src = pkgs.fetchFromGitHub {
               owner = "etr";
-              repo = name;
+              repo = pname;
               rev = version;
               sha256 = "sha256-Pc3Fvd8D4Ymp7dG9YgU58mDceOqNfhWE1JtnpVaNx/Y=";
             };
 
             nativeBuildInputs = with pkgs; [ autoconf automake libtool ];
 
-            buildInputs = with pkgs; [ gnutls libmicrohttpd sqlitecpp ];
+            buildInputs = with pkgs; [ gnutls libmicrohttpd ];
+
+            enableParallelBuilding = true;
 
             patchPhase = ''
-              substituteInPlace configure.ac --replace "/bin/pwd" "${pkgs.coreutils}/bin/pwd"
+              patchShebangs ./bootstrap
             '';
 
             configurePhase = ''
-              aclocal -I m4
-              autoheader
-              if [[ "$OSTYPE" == "darwin"* ]]; then
-                glibtoolize --automake
-              else
-                libtoolize --automake
-              fi
-              automake --add-missing
-              autoconf
-
-              mkdir build
-              cd build
-              ../configure --prefix=$out
+              ./bootstrap
+              ./configure --prefix=$out --enable-same-directory-build
             '';
           };
         dpp = pkgs.stdenv.mkDerivation
           rec {
-            name = "DPP";
+            pname = "DPP";
             version = "10.0.26";
             src = pkgs.fetchFromGitHub {
               owner = "brainboxdotcc";
-              repo = name;
+              repo = pname;
               rev = "v${version}";
               sha256 = "sha256-o78ijctDqrONyi8A3+FXvnK9q97B4j1ZIQYNUgl6XJU=";
             };
@@ -61,7 +52,7 @@
           };
         elzip = pkgs.stdenv.mkDerivation
           rec {
-            name = "elzip";
+            pname = "elzip";
             version = "516e161d5c96aa8f2603fb30b10b7770a87332c2";
             src = pkgs.fetchFromGitHub {
               owner = "Sygmei";
@@ -101,7 +92,7 @@
       {
         packages = {
           chaosmod-workshopprovider = pkgs.stdenv.mkDerivation {
-            name = "chaosworkshop";
+            pname = "chaosworkshop";
             version = "1.0";
 
             src = nixpkgs.lib.cleanSource ./.;
