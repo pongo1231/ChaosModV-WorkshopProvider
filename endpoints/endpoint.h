@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <functional>
 #include <memory>
-#include <string>
+#include <string_view>
 #include <unordered_map>
 
 using namespace httpserver;
@@ -27,14 +27,14 @@ namespace endpoint
 {
 	struct endpoint_data;
 
-	inline std::unordered_map<std::string, std::function<std::shared_ptr<http_response>(const http_request &)>>
+	inline std::unordered_map<std::string_view, std::function<std::shared_ptr<http_response>(const http_request &)>>
 	    get_endpoint_handlers;
-	inline std::unordered_map<std::string, std::function<std::shared_ptr<http_response>(const http_request &)>>
+	inline std::unordered_map<std::string_view, std::function<std::shared_ptr<http_response>(const http_request &)>>
 	    post_endpoint_handlers;
 
 	struct get_endpoint_handler
 	{
-		get_endpoint_handler(std::string endpoint,
+		get_endpoint_handler(std::string_view endpoint,
 		                     std::function<std::shared_ptr<http_response>(const http_request &)> func)
 		{
 			assert(!get_endpoint_handlers.contains(endpoint));
@@ -44,7 +44,7 @@ namespace endpoint
 
 	struct post_endpoint_handler
 	{
-		post_endpoint_handler(std::string endpoint,
+		post_endpoint_handler(std::string_view endpoint,
 		                      std::function<std::shared_ptr<http_response>(const http_request &)> func)
 		{
 			assert(!post_endpoint_handlers.contains(endpoint));

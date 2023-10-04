@@ -11,7 +11,7 @@ static std::shared_ptr<http_response> handle_endpoint_view(const http_request &r
 	if (token.empty() || !user::does_token_exist(token))
 		return std::make_shared<string_response>(html_file::read_file("page/workshop/login.html"), 200, "text/html");
 
-	if (args.contains("submission_id"))
+	if (args.contains(std::string_view("submission_id")))
 	{
 		auto submission_id = ARG("submission_id");
 		if (!submission_id.empty())

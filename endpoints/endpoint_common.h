@@ -14,8 +14,8 @@
 
 using namespace nlohmann;
 
-#define COMMON_PROLOGUE auto args = request.get_args();
-#define ARG(x) util::string_sanitize(util::string_trim(args[x]))
+#define COMMON_PROLOGUE auto args = request.get_args_flat();
+#define ARG(x) util::string_sanitize(util::string_trim(std::string(args[x])))
 
 #define USER_TOKEN_CHECK(submission_id)                                                                              \
 	do                                                                                                               \

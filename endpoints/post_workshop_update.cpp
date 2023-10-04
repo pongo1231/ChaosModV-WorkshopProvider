@@ -2,7 +2,7 @@
 
 #include "webhook.h"
 
-#include <11zip/include/elzip/elzip.hpp>
+#include <elzip/elzip.hpp>
 #include <sys/poll.h>
 #include <zstd.h>
 
@@ -27,8 +27,8 @@ static size_t get_user_max_data_size(const std::string &user_id)
 	return global_options.submission_max_total_size;
 }
 
-static pid_t handle_unpacking(const std::string &data, const std::string &data_content_path,
-                              const std::string &data_path, size_t max_data_size)
+static pid_t handle_unpacking(const std::string_view data, const std::string_view data_content_path,
+                              const std::string_view data_path, size_t max_data_size)
 {
 	file::write_file(data_path, data);
 
