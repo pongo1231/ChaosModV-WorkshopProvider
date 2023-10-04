@@ -106,11 +106,11 @@
 
             src = nixpkgs.lib.cleanSource ./.;
 
-            nativeBuildInputs = [ pkgs.cmake ];
-
-            cmakeFlags = [ "-DUSE_SYSTEM_LIBS=1" ];
+            nativeBuildInputs = with pkgs; [ cmake nlohmann_json ];
 
             buildInputs = with pkgs; [ openssl zstd sqlite icu sqlitecpp libmicrohttpd libhttpserver dpp elzip ];
+
+            cmakeFlags = [ "-DUSE_SYSTEM_LIBS=1" ];
 
             installPhase = ''
               mkdir -p $out/bin/
