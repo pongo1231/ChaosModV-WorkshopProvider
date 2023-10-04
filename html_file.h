@@ -10,7 +10,7 @@
 namespace html_file
 {
 	inline std::string
-	read_file(std::string_view filename,
+	read_file(const std::string &filename,
 	          std::vector<std::pair<std::string_view, std::string_view>> additional_replacements = {})
 	{
 		auto file             = file::read_file(filename);

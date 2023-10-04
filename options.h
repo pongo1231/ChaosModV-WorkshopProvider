@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#define OPTIONS_DEFAULT_FILE "data/options.json"
+#define OPTIONS_FILE "data/options.json"
 
 inline struct global_options
 {
@@ -32,16 +32,10 @@ inline struct global_options
 
 	void read()
 	{
-		static auto filename = []()
-		{
-			auto envfilename = std::getenv("OPTIONS_FILE");
-			return envfilename && strlen(envfilename) > 0 ? envfilename : OPTIONS_DEFAULT_FILE;
-		}();
-
-		auto options_json = file::read_json_file(filename);
+		auto options_json = file::read_json_file(OPTIONS_FILE);
 		if (options_json.empty())
 		{
-			LOG(RED << "ERROR: Missing or invalid " << filename << " file\n");
+			LOG(RED << "ERROR: Missing or invalid " OPTIONS_FILE " file\n" << WHITE);
 			exit(EXIT_FAILURE);
 		}
 

@@ -37,3 +37,5 @@ ninja
 ```
 
 Make sure to also copy the content of the `dist/` folder into your build folder and to set the `domain` option in the `data/options.json` file correspondingly.
+
+Currently you will also need a `cert.pem` and `key.pem` in the same directory as the binary (from e.g. letsencrypt).

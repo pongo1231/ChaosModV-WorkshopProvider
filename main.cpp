@@ -97,8 +97,8 @@ int main()
 
 	webserver server = create_webserver(global_options.port)
 	                       .use_ssl()
-	                       .https_mem_cert("cert.pem")
-	                       .https_mem_key("key.pem")
+	                       .https_mem_cert(file::get_data_root() + "cert.pem")
+	                       .https_mem_key(file::get_data_root() + "key.pem")
 	                       .connection_timeout(global_options.connection_timeout);
 
 	LOG("\n\n" << GREEN << "Starting http server on port " << global_options.port << "\n");

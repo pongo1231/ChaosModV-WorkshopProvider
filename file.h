@@ -8,18 +8,37 @@
 
 namespace file
 {
-	inline bool does_file_exist(std::string_view file_name)
+	inline std::string get_data_root()
 	{
-		struct stat temp;
-		return stat(file_name.data(), &temp) == 0;
+		static auto root = []() -> std::string
+		{
+			auto root_env = std::getenv("DATA_ROOT");
+			if (!root_env)
+				return {};
+
+			return std::string(root_env) + "/";
+		}();
+		return root;
 	}
 
-	inline std::string read_file(std::string_view filename)
+	inline bool does_file_exist(std::string filename)
 	{
+		if (filename.find(get_data_root()) == filename.npos)
+			filename = get_data_root() + filename;
+
+		struct stat temp;
+		return stat(filename.c_str(), &temp) == 0;
+	}
+
+	inline std::string read_file(std::string filename)
+	{
+		if (filename.find(get_data_root()) == filename.npos)
+			filename = get_data_root() + filename;
+
 		if (!file::does_file_exist(filename))
 			return {};
 
-		auto file = fopen(filename.data(), "r");
+		auto file = fopen(filename.c_str(), "r");
 		fseek(file, 0, SEEK_END);
 		auto file_len = ftell(file);
 		rewind(file);
@@ -33,9 +52,9 @@ namespace file
 		return buffer;
 	}
 
-	inline nlohmann::basic_json<> read_json_file(std::string_view filename)
+	inline nlohmann::basic_json<> read_json_file(const std::string &filename)
 	{
-		auto file = file::read_file(filename);
+		auto file = read_file(filename);
 		try
 		{
 			return nlohmann::json::parse(file);
@@ -46,9 +65,12 @@ namespace file
 		return nlohmann::json();
 	}
 
-	inline void write_file(std::string_view filename, std::string_view content)
+	inline void write_file(std::string filename, std::string_view content)
 	{
-		auto file = fopen(filename.data(), "w");
+		if (filename.find(get_data_root()) == filename.npos)
+			filename = get_data_root() + filename;
+
+		auto file = fopen(filename.c_str(), "w");
 		fwrite(content.data(), 1, content.size(), file);
 		fclose(file);
 	}

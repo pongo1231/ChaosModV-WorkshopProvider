@@ -108,7 +108,7 @@
 
             nativeBuildInputs = with pkgs; [ cmake nlohmann_json ];
 
-            buildInputs = with pkgs; [ openssl zstd sqlite icu sqlitecpp libmicrohttpd libhttpserver dpp elzip ];
+            buildInputs = commonBuildInputs;
 
             cmakeFlags = [ "-DUSE_SYSTEM_LIBS=1" ];
 
