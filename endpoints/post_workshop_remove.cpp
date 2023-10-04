@@ -38,7 +38,7 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 		return make_response<string_response>(
 		    json_formulate().set("success", false).set("reason", "Statement failed").to_string());
 
-	std::filesystem::remove_all(SUBMISSION_DIR_FRAGMENT + submission_id);
+	std::filesystem::remove_all(file::get_data_root() + SUBMISSION_DIR_FRAGMENT + submission_id);
 
 	if (!author_user_id.empty())
 		user::erase_user_attribute(author_user_id, submission_id);

@@ -13,6 +13,7 @@ inline struct global_options
 {
 	std::string domain;
 	unsigned short port;
+	bool use_tls;
 	size_t connection_timeout;
 	std::string webhook_url;
 
@@ -35,7 +36,7 @@ inline struct global_options
 		auto options_json = file::read_json_file(OPTIONS_FILE);
 		if (options_json.empty())
 		{
-			LOG(RED << "ERROR: Missing or invalid " OPTIONS_FILE " file\n" << WHITE);
+			LOG(RED << "ERROR: Missing or invalid " OPTIONS_FILE " file in DATA_ROOT path\n" << WHITE);
 			exit(EXIT_FAILURE);
 		}
 
@@ -57,6 +58,7 @@ inline struct global_options
 
 		domain                              = get("domain");
 		port                                = get("port");
+		use_tls                             = get("use_tls");
 		connection_timeout                  = get("connection_timeout");
 		webhook_url                         = get("webhook_url");
 

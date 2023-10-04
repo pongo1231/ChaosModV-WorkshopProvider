@@ -21,7 +21,7 @@ namespace submission
 	{
 		static auto &database = []() -> SQLite::Database &
 		{
-			static SQLite::Database database(SUBMISSIONS_DATABASE,
+			static SQLite::Database database(file::get_data_root() + SUBMISSIONS_DATABASE,
 			                                 SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE | SQLite::OPEN_FULLMUTEX);
 			database.exec("CREATE TABLE IF NOT EXISTS submissions("
 			              "id          TEXT  PRIMARY KEY NOT NULL,"

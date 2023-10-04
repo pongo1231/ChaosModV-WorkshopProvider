@@ -250,7 +250,7 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 	if (user::is_user_admin(user_id) || orig_author.empty())
 		author = !author.empty() ? author : (!orig_author.empty() ? orig_author : "Unknown");
 
-	auto data_target_path                 = SUBMISSION_DIR_FRAGMENT + submission_id;
+	auto data_target_path                 = file::get_data_root() + SUBMISSION_DIR_FRAGMENT + submission_id;
 	auto data_target_data_path            = data_target_path + SUBMISSION_DATA_FILE_FRAGMENT;
 	auto data_target_compressed_data_path = data_target_path + SUBMISSION_DATA_FILE_COMPRESSED_FRAGMENT;
 

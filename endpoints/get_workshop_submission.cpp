@@ -20,11 +20,12 @@ static std::shared_ptr<http_response> handle_endpoint_fetchsubmissiondata(const 
 		return make_response<string_response>(
 		    json_formulate().set("success", false).set("reason", "Invalid submission_id").to_string(), 400);
 
-	auto path = SUBMISSION_DIR_FRAGMENT + submission_id + SUBMISSION_DATA_FILE_COMPRESSED_FRAGMENT;
+	auto path =
+	    file::get_data_root() + SUBMISSION_DIR_FRAGMENT + submission_id + SUBMISSION_DATA_FILE_COMPRESSED_FRAGMENT;
 
 	if (!file::does_file_exist(path))
 	{
-		path = SUBMISSION_DIR_FRAGMENT + submission_id + SUBMISSION_DATA_FILE_FRAGMENT;
+		path = file::get_data_root() + SUBMISSION_DIR_FRAGMENT + submission_id + SUBMISSION_DATA_FILE_FRAGMENT;
 
 		if (!file::does_file_exist(path))
 			return make_response<string_response>(

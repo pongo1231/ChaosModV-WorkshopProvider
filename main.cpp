@@ -95,13 +95,26 @@ int main()
 
 	global_options.read();
 
-	webserver server = create_webserver(global_options.port)
-	                       .use_ssl()
-	                       .https_mem_cert(file::get_data_root() + "cert.pem")
-	                       .https_mem_key(file::get_data_root() + "key.pem")
-	                       .connection_timeout(global_options.connection_timeout);
+	auto server_builder = create_webserver(global_options.port).connection_timeout(global_options.connection_timeout);
 
-	LOG("\n\n" << GREEN << "Starting http server on port " << global_options.port << "\n");
+	if (global_options.use_tls)
+	{
+		if (!file::does_file_exist("cert.pem") || !file::does_file_exist("key.pem"))
+		{
+			LOG(RED
+			    << "No cert.pem or key.pem files found in DATA_ROOT path, aborting (set use_tls to false to disable)\n"
+			    << WHITE);
+			exit(EXIT_FAILURE);
+		}
+
+		server_builder = server_builder.use_ssl()
+		                     .https_mem_cert(file::get_data_root() + "cert.pem")
+		                     .https_mem_key(file::get_data_root() + "key.pem");
+	}
+
+	LOG("\n\n" << GREEN << "Starting http server on port " << global_options.port << "\n" << WHITE);
+
+	webserver server = server_builder;
 
 	chaosworkshop workshop;
 	server.register_resource("/", &workshop, true);

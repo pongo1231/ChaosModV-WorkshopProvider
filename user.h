@@ -22,7 +22,7 @@ namespace user
 	{
 		static auto &database = []() -> SQLite::Database &
 		{
-			static SQLite::Database database(USERS_DATABASE,
+			static SQLite::Database database(file::get_data_root() + USERS_DATABASE,
 			                                 SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE | SQLite::OPEN_FULLMUTEX);
 			database.exec("CREATE TABLE IF NOT EXISTS users("
 			              "name     TEXT PRIMARY KEY NOT NULL,"

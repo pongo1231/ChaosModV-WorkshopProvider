@@ -1,6 +1,7 @@
 {
     "domain": "",
     "port": 9907,
+    "use_tls": false,
     "connection_timeout": 60,
     "webhook_url": "",
     "user": {

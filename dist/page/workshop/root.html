@@ -41,11 +41,11 @@
         }
 
         function onclick_new(submission_id) {
-            location.href = "https://$$domain$$/workshop/view?submission_id=";
+            location.href = "$$domain$$/workshop/view?submission_id=";
         }
 
         async function onclick_download(submission_id) {
-            const result = await fetch("https://$$domain$$/workshop/fetch_submission_data?uncompressed=yes&submission_id=" + submission_id, { method: "GET" });
+            const result = await fetch("$$domain$$/workshop/fetch_submission_data?uncompressed=yes&submission_id=" + submission_id, { method: "GET" });
             const is_compressed = result.headers.get("compressed") == "yes";
 
             const blob = await result.blob();
@@ -57,7 +57,7 @@
         }
 
         function onclick_edit(submission_id) {
-            location.href = "https://$$domain$$/workshop/view?submission_id=" + submission_id;
+            location.href = "$$domain$$/workshop/view?submission_id=" + submission_id;
         }
 
         function onclick_logout() {
@@ -70,7 +70,7 @@
 
             let form_data = new FormData();
             form_data.append("token", token);
-            const response = await fetch("https://$$domain$$/workshop/fetch_my_submissions", { method: "POST", body: form_data });
+            const response = await fetch("$$domain$$/workshop/fetch_my_submissions", { method: "POST", body: form_data });
             const json = await response.json();
 
             if (json["success"] == null || !json["success"])

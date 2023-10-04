@@ -47,7 +47,7 @@ static std::shared_ptr<http_response> handle_endpoint_admincreateuser(const http
 		return make_response<string_response>(
 		    json_formulate().set("success", false).set("reason", "Statement failed").to_string(), 400);
 
-	std::filesystem::create_directories(USER_DIR_FRAGMENT + user_id);
+	std::filesystem::create_directories(file::get_data_root() + USER_DIR_FRAGMENT + user_id);
 
 	return make_response<string_response>(json_formulate().set("success", true).set("user_id", user_id).to_string(),
 	                                      400);
@@ -131,7 +131,7 @@ static std::shared_ptr<http_response> handle_endpoint_adminsetuserattribute(cons
 		return make_response<string_response>(
 		    json_formulate().set("success", false).set("reason", "Missing value").to_string(), 400);
 
-	std::filesystem::create_directories(USER_DIR_FRAGMENT + user_id);
+	std::filesystem::create_directories(file::get_data_root() + USER_DIR_FRAGMENT + user_id);
 
 	user::set_user_attribute(user_id, attribute_name, attribute_value);
 
@@ -171,7 +171,7 @@ static std::shared_ptr<http_response> handle_endpoint_adminclearuserattribute(co
 		return make_response<string_response>(
 		    json_formulate().set("success", false).set("reason", "Missing attribute").to_string(), 400);
 
-	std::filesystem::create_directories(USER_DIR_FRAGMENT + user_id);
+	std::filesystem::create_directories(file::get_data_root() + USER_DIR_FRAGMENT + user_id);
 
 	user::erase_user_attribute(user_id, attribute_name);
 

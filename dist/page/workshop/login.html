@@ -40,7 +40,7 @@
             let form_data = new FormData();
             form_data.append("name", name);
             form_data.append("password", hashed_password);
-            const response = await fetch("https://$$domain$$/user/login", { method: "POST", body: form_data });
+            const response = await fetch("$$domain$$/user/login", { method: "POST", body: form_data });
             const json = await response.json();
 
             if (json["success"] == null || !json["success"]) {
