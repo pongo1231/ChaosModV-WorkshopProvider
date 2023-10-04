@@ -9,7 +9,8 @@ This only runs on Linux. Windows support is not easily possible due to the libra
 ### Nix
 This project provides a flake.nix for dropping into a dev shell with all required dependencies installed. Make sure both the `nix-command` and `flakes` experimental features are enabled.
 
-Run `nix develop` to drop into the dev shell. `nix build` or `nix run github:pongo1231/ChaosModV-WorkshopProvider` works for building the project as Nix derivation, however currently it will try to write data files in the binary's path (which will not work in the result dir, located inside the immutable Nix store).
+Run `nix develop` to drop into the dev shell.
+`nix build` or `nix run github:pongo1231/ChaosModV-WorkshopProvider` works for building the project as a Nix derivation, make sure to set `DATA_ROOT` to a writable path outside the Nix store however.
 
 See the build instructions below and make sure to add `-DUSE_SYSTEM_LIBS=1` to the cmake build command.
 
