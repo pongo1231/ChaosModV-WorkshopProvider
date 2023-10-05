@@ -22,16 +22,13 @@ using namespace nlohmann;
 	{                                                                                                                \
 		auto token = ARG("token");                                                                                   \
 		if (token.empty())                                                                                           \
-			return make_response<string_response>(                                                                   \
-			    json_formulate().set("success", false).set("reason", "Missing token").to_string(), 400);             \
+			return make_response<string_response>(json_formulate_failure("Missing token"), 400);                     \
                                                                                                                      \
 		if (!user::does_token_exist(token))                                                                          \
-			return make_response<string_response>(                                                                   \
-			    json_formulate().set("success", false).set("reason", "Invalid token").to_string(), 400);             \
+			return make_response<string_response>(json_formulate_failure("Invalid token"), 400);                     \
                                                                                                                      \
 		if (!submission_id.empty() && !user::can_user_modify_submission(user::get_token_user(token), submission_id)) \
-			return make_response<string_response>(                                                                   \
-			    json_formulate().set("success", false).set("reason", "Not allowed").to_string(), 400);               \
+			return make_response<string_response>(json_formulate_failure("Not allowed"), 400);                       \
 	} while (0)
 
 template <typename t> static std::shared_ptr<t> make_response(auto... args)

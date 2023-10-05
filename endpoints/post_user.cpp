@@ -8,15 +8,13 @@ static std::shared_ptr<http_response> handle_endpoint_userlogin(const http_reque
 	auto password = ARG("password");
 
 	if (name.empty())
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Missing name").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Missing name"), 400);
 
 	if (password.empty())
 	{
 		auto raw_password = ARG("raw_password");
 		if (raw_password.empty())
-			return make_response<string_response>(
-			    json_formulate().set("success", false).set("reason", "Missing password").to_string(), 400);
+			return make_response<string_response>(json_formulate_failure("Missing password"), 400);
 
 		password = util::sha512(raw_password);
 	}
@@ -29,23 +27,21 @@ static std::shared_ptr<http_response> handle_endpoint_userlogin(const http_reque
 	        {
 		        if (statement.getColumn("password").getString() != password)
 		        {
-			        error_response = make_response<string_response>(
-			            json_formulate().set("success", false).set("reason", "Invalid password").to_string(), 400);
+			        error_response = make_response<string_response>(json_formulate_failure("Invalid password"), 400);
 			        return;
 		        }
 
 		        std::string user_id = statement.getColumn("id");
 		        if (user_id.empty())
 		        {
-			        error_response = make_response<string_response>(
-			            json_formulate().set("success", false).set("reason", "Invalid user").to_string(), 400);
+			        error_response = make_response<string_response>(json_formulate_failure("Invalid user"), 400);
 			        return;
 		        }
 
 		        if (user::contains_user_attribute(user_id, "suspended"))
 		        {
-			        error_response = make_response<string_response>(
-			            json_formulate().set("success", false).set("reason", "Account is suspended").to_string(), 400);
+			        error_response =
+			            make_response<string_response>(json_formulate_failure("Account is suspended"), 400);
 			        return;
 		        }
 
@@ -56,13 +52,12 @@ static std::shared_ptr<http_response> handle_endpoint_userlogin(const http_reque
 		        token = util::generate_random_string();
 		        user::set_token_user(token, user_id);
 	        }))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Name not found").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Name not found"), 400);
 
 	if (error_response)
 		return error_response;
 
-	return make_response<string_response>(json_formulate().set("success", true).set("token", token).to_string());
+	return make_response<string_response>(json_formulate_success().set("token", token));
 }
 
 REGISTER_POST_ENDPOINT("/user/login", handle_endpoint_userlogin);
@@ -73,11 +68,9 @@ static std::shared_ptr<http_response> handle_endpoint_usertokenvalidation(const 
 
 	auto token = ARG("token");
 	if (token.empty())
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Missing token").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Missing token"), 400);
 
-	return make_response<string_response>(
-	    json_formulate().set("success", true).set("token_valid", user::does_token_exist(token)).to_string());
+	return make_response<string_response>(json_formulate_success().set("token_valid", user::does_token_exist(token)));
 }
 
 REGISTER_POST_ENDPOINT("/user/token_valid", handle_endpoint_usertokenvalidation);

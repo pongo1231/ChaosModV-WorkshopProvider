@@ -18,8 +18,7 @@ static std::shared_ptr<http_response> handle_endpoint_fetchusersubmissions(const
 			    submissions_json[submission_id][statement.getColumnName(i)] = statement.getColumn(i);
 	    });
 
-	return make_response<string_response>(
-	    json_formulate().set("success", true).set("submissions", submissions_json).to_string());
+	return make_response<string_response>(json_formulate_success().set("submissions", submissions_json));
 }
 
 REGISTER_POST_ENDPOINT("/workshop/fetch_my_submissions", handle_endpoint_fetchusersubmissions);

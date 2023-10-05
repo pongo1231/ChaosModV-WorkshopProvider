@@ -8,12 +8,10 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 
 	auto submission_id = ARG("submission_id");
 	if (submission_id.empty())
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Missing submission_id").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Missing submission_id"), 400);
 
 	if (!submission::submission_id_sanitycheck(submission_id))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Invalid submission_id").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Invalid submission_id"), 400);
 
 	USER_TOKEN_CHECK(submission_id);
 	auto token           = ARG("token");
@@ -30,13 +28,11 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 		                                       name           = statement.getColumn(0).getString();
 		                                       author_user_id = user::get_user_id(statement.getColumn(1).getString());
 	                                       }))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "submission_id not found").to_string());
+		return make_response<string_response>(json_formulate_failure("submission_id not found"));
 
 	if (!database::exec<std::string>(database, "DELETE FROM submissions WHERE id=@submission_id",
 	                                 { "@submission_id", submission_id }))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Statement failed").to_string());
+		return make_response<string_response>(json_formulate_failure("Statement failed"));
 
 	std::filesystem::remove_all(file::get_data_root() + SUBMISSION_DIR_FRAGMENT + submission_id);
 
@@ -52,7 +48,7 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 
 	cache::invalidate_submissions_cache();
 
-	return make_response<string_response>(json_formulate().set("success", true).to_string());
+	return make_response<string_response>(json_formulate_success());
 }
 
 REGISTER_POST_ENDPOINT("/workshop/remove_submission", handle_endpoint);

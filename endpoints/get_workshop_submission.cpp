@@ -13,12 +13,10 @@ static std::shared_ptr<http_response> handle_endpoint_fetchsubmissiondata(const 
 
 	auto submission_id = ARG("submission_id");
 	if (submission_id.empty())
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Missing submission_id").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Missing submission_id"), 400);
 
 	if (!submission::submission_id_sanitycheck(submission_id))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Invalid submission_id").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Invalid submission_id"), 400);
 
 	auto path =
 	    file::get_data_root() + SUBMISSION_DIR_FRAGMENT + submission_id + SUBMISSION_DATA_FILE_COMPRESSED_FRAGMENT;
@@ -28,8 +26,7 @@ static std::shared_ptr<http_response> handle_endpoint_fetchsubmissiondata(const 
 		path = file::get_data_root() + SUBMISSION_DIR_FRAGMENT + submission_id + SUBMISSION_DATA_FILE_FRAGMENT;
 
 		if (!file::does_file_exist(path))
-			return make_response<string_response>(
-			    json_formulate().set("success", false).set("reason", "Teapot?").to_string(), 418);
+			return make_response<string_response>(json_formulate_failure("Teapot?"), 418);
 
 		auto response = make_response<file_response>(path);
 		response->with_header("compressed", "no");
@@ -67,12 +64,10 @@ static std::shared_ptr<http_response> handle_endpoint_fetchsubmission(const http
 
 	auto submission_id = ARG("submission_id");
 	if (submission_id.empty())
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Missing submission_id").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Missing submission_id"), 400);
 
 	if (!submission::submission_id_sanitycheck(submission_id))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Invalid submission_id").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Invalid submission_id"), 400);
 
 	json submission_json;
 	if (!database::exec_steps<std::string>(submission::get_database(),
@@ -83,11 +78,9 @@ static std::shared_ptr<http_response> handle_endpoint_fetchsubmission(const http
 		                                       for (int i = 1; i < statement.getColumnCount(); i++)
 			                                       submission_json[statement.getColumnName(i)] = statement.getColumn(i);
 	                                       }))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Submission not found").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Submission not found"), 400);
 
-	return make_response<string_response>(
-	    json_formulate().set("success", true).set("submission", submission_json).to_string());
+	return make_response<string_response>(json_formulate_success().set("submission", submission_json));
 }
 
 REGISTER_GET_ENDPOINT("/workshop/fetch_submission", handle_endpoint_fetchsubmission);

@@ -2,6 +2,8 @@
 
 #include <json.h>
 
+#include <string_view>
+
 struct json_formulation
 {
 	nlohmann::basic_json<> json_object;
@@ -12,7 +14,7 @@ struct json_formulation
 		return *this;
 	}
 
-	std::string to_string()
+	operator std::string() const
 	{
 		return json_object.dump();
 	}
@@ -21,4 +23,14 @@ struct json_formulation
 inline json_formulation json_formulate()
 {
 	return json_formulation();
+}
+
+inline json_formulation json_formulate_success()
+{
+	return json_formulation().set("success", true);
+}
+
+inline json_formulation json_formulate_failure(std::string_view reason)
+{
+	return json_formulation().set("success", false).set("reason", reason);
 }

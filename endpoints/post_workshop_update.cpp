@@ -69,10 +69,8 @@ static pid_t handle_unpacking(std::string_view data, std::string_view data_conte
 			data_file_count++;
 			if (data_file_count > global_options.submission_max_file_count)
 			{
-				write_pipe(json_formulate()
-				               .set("success", false)
-				               .set("reason", "Data contains too many files (max 400)")
-				               .to_string());
+				write_pipe(json_formulate_failure("Data contains too many files (max "
+				                                  + std::to_string(global_options.submission_max_file_count) + ")"));
 				exit(EXIT_FAILURE);
 			}
 
@@ -84,18 +82,13 @@ static pid_t handle_unpacking(std::string_view data, std::string_view data_conte
 			auto extension         = path.extension();
 			if (!path.has_extension() || (extension != ".lua" && extension != ".mp3" && extension != ".txt"))
 			{
-				write_pipe(json_formulate()
-				               .set("success", false)
-				               .set("reason", "Data contains invalid file (" + relative_path_str + ")")
-				               .to_string());
+				write_pipe(json_formulate_failure("Data contains invalid file (" + relative_path_str + ")"));
 				exit(EXIT_FAILURE);
 			}
 			else if (relative_path_str.length() > global_options.submission_max_file_name_length)
 			{
-				write_pipe(json_formulate()
-				               .set("success", false)
-				               .set("reason", "Data contains file over character limit (" + relative_path_str + ")")
-				               .to_string());
+				write_pipe(
+				    json_formulate_failure("Data contains file over character limit (" + relative_path_str + ")"));
 				exit(EXIT_FAILURE);
 			}
 
@@ -104,17 +97,14 @@ static pid_t handle_unpacking(std::string_view data, std::string_view data_conte
 
 		if (data_file_size == 0)
 		{
-			write_pipe(json_formulate().set("success", false).set("reason", "Data contains no files").to_string());
+			write_pipe(json_formulate_failure("Data contains no files"));
 			exit(EXIT_FAILURE);
 		}
 
 		if (data_file_size > max_data_size)
 		{
-			write_pipe(
-			    json_formulate()
-			        .set("success", false)
-			        .set("reason", "Data exceeds size limit (" + std::to_string(max_data_size / 1024 / 1024) + "MB)")
-			        .to_string());
+			write_pipe(json_formulate_failure("Data exceeds size limit (" + std::to_string(max_data_size / 1024 / 1024)
+			                                  + "MB)"));
 			exit(EXIT_FAILURE);
 		}
 
@@ -124,7 +114,7 @@ static pid_t handle_unpacking(std::string_view data, std::string_view data_conte
 	catch (elz::zip_exception exception)
 	{
 		LOG(RED << exception.what() << "\n");
-		write_pipe(json_formulate().set("success", false).set("reason", "Data is not a valid zip file").to_string());
+		write_pipe(json_formulate_failure("Data is not a valid zip file"));
 		exit(EXIT_FAILURE);
 	}
 
@@ -146,8 +136,7 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 
 	std::string submission_id = ARG("submission_id");
 	if (!submission_id.empty() && !submission::submission_id_sanitycheck(submission_id))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Invalid submission_id").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Invalid submission_id"), 400);
 
 	USER_TOKEN_CHECK(submission_id);
 	auto token           = ARG("token");
@@ -169,18 +158,15 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 		                                          orig_sha256      = statement.getColumn("sha256").getString();
 		                                          orig_version     = statement.getColumn("version").getString();
 	                                          }))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Invalid submission_id").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Invalid submission_id"), 400);
 
 	if (submission_id.empty())
 	{
 		// check if user has reached max submissions count
 		if (user::get_user_attribute(user_id, "submissions").size() >= global_options.user_max_submissions)
 			return make_response<string_response>(
-			    json_formulate()
-			        .set("success", false)
-			        .set("reason", "Submissions limit reached, delete an existing one before creating a new submission")
-			        .to_string(),
+			    json_formulate_failure(
+			        "Submissions limit reached, delete an existing one before creating a new submission"),
 			    400);
 
 		while (submission_id.empty())
@@ -201,33 +187,28 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 		name = orig_name;
 
 	if (name.empty())
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Missing name").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Missing name"), 400);
 
 	if (name.length() > global_options.submission_max_name_length || name.find('\n') != name.npos
 	    || name.find('\\') != name.npos)
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Invalid name").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Invalid name"), 400);
 
 	if (database::exec_steps<std::string, std::string>(
 	        database, "SELECT 1 FROM submissions WHERE name=@name AND NOT id=@submission_id", { "@name", name },
 	        { "@submission_id", submission_id }))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Name already in use").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Name already in use"), 400);
 
 	std::string version = ARG("version");
 	if (version.empty() && !orig_version.empty())
 		version = orig_version;
 
 	if (version.empty())
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Missing version").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Missing version"), 400);
 
 	if (version.length() > global_options.submission_max_version_length || version.starts_with('.')
 	    || version.ends_with('.')
 	    || !std::all_of(version.begin(), version.end(), [](char c) { return std::isdigit(c) || c == '.'; }))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Invalid version").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Invalid version"), 400);
 
 	std::string description = ARG("description");
 	if (description.empty() && !orig_description.empty())
@@ -236,15 +217,13 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 	if (description.length() > global_options.submission_max_description_length
 	    || std::count(description.begin(), description.end(), '\n')
 	           > global_options.submission_max_description_newlines)
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Invalid description").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Invalid description"), 400);
 
 	auto changelog = ARG("changelog");
 	if (!changelog.empty()
 	    && (changelog.size() > global_options.submission_max_changelog_length
 	        || std::count(changelog.begin(), changelog.end(), '\n') > global_options.submission_max_changelog_newlines))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Invalid changelog").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Invalid changelog"), 400);
 
 	auto author = user::get_user_name(user_id);
 	if (user::is_user_admin(user_id) || orig_author.empty())
@@ -260,20 +239,17 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 	auto data                             = args["data"];
 	if (data.empty() && !file::does_file_exist(data_target_compressed_data_path)
 	    && !file::does_file_exist(data_target_data_path))
-		return make_response<string_response>(
-		    json_formulate().set("success", false).set("reason", "Missing data").to_string(), 400);
+		return make_response<string_response>(json_formulate_failure("Missing data"), 400);
 
 	size_t data_file_len = 0;
 	if (!data.empty())
 	{
 		auto max_data_size = get_user_max_data_size(user_id);
 		if (data.length() > max_data_size)
-			return make_response<string_response>(
-			    json_formulate()
-			        .set("success", false)
-			        .set("reason", "Data exceeds size limit (" + std::to_string(max_data_size / 1024 / 1024) + " MB)")
-			        .to_string(),
-			    400);
+			return make_response<string_response>(json_formulate_failure("Data exceeds size limit ("
+			                                                             + std::to_string(max_data_size / 1024 / 1024)
+			                                                             + " MB)"),
+			                                      400);
 
 		std::string data_content_path = "/tmp/" + submission_id;
 		std::string data_path         = data_content_path + ".zip";
@@ -285,10 +261,7 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 
 		auto unpacking_process_pid = handle_unpacking(data, data_content_path, data_path, max_data_size);
 		if (unpacking_process_pid < 1)
-			return make_response<string_response>(json_formulate()
-			                                          .set("success", false)
-			                                          .set("reason", "Internal error (unpacking_process_pid < 1)")
-			                                          .to_string(),
+			return make_response<string_response>(json_formulate_failure("Internal error (unpacking_process_pid < 1)"),
 			                                      500);
 		auto start_time = std::chrono::system_clock::now();
 		while (true)
@@ -302,10 +275,8 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 				kill(unpacking_process_pid, SIGTERM);
 				cleanup();
 				return make_response<string_response>(
-				    json_formulate()
-				        .set("success", false)
-				        .set("reason", "Timeout while verifying data, try reducing the amount of files / compression")
-				        .to_string(),
+				    json_formulate_failure(
+				        "Timeout while verifying data, try reducing the amount of files / compression"),
 				    400);
 			}
 
@@ -383,10 +354,7 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 	        { "@submission_id", submission_id }, { "@author", author }, { "@description", description },
 	        { "@lastupdated", lastupdated }, { "@name", name }, { "@sha256", sha256 }, { "@version", version }))
 		return make_response<string_response>(
-		    json_formulate()
-		        .set("success", false)
-		        .set("reason", "Timeout while verifying data, try reducing the amount of files / compression")
-		        .to_string(),
+		    json_formulate_failure("Timeout while verifying data, try reducing the amount of files / compression"),
 		    400);
 
 	cache::invalidate_submissions_cache();
@@ -436,8 +404,7 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 	if (send_webhook)
 		webhook::send(webhook_options);
 
-	return make_response<string_response>(
-	    json_formulate().set("success", true).set("submission_id", submission_id).to_string());
+	return make_response<string_response>(json_formulate_success().set("submission_id", submission_id));
 }
 
 REGISTER_POST_ENDPOINT("/workshop/update_submission", handle_endpoint);
