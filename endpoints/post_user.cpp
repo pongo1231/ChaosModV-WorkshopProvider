@@ -49,7 +49,7 @@ static std::shared_ptr<http_response> handle_endpoint_userlogin(const http_reque
 			        return;
 		        }
 
-		        auto tokens = user::get_user_tokens(user_id);
+		        const auto &tokens = user::get_user_tokens(user_id);
 		        if (tokens.size() > global_options.user_max_active_tokens)
 			        user::erase_token(tokens[0]);
 
