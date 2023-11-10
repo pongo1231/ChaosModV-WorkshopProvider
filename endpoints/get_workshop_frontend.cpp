@@ -29,8 +29,7 @@ static std::shared_ptr<http_response> handle_endpoint_view(const http_request &r
 		}
 
 		return std::make_shared<string_response>(
-		    html_file::read_file("page/workshop/edit.html",
-		                         { { "$$submission_id$$", "const submission_id = \"" + submission_id + "\";" } }),
+		    html_file::read_file("page/workshop/edit.html", { { "$$submission_id$$", "\"" + submission_id + "\"" } }),
 		    200, "text/html");
 	}
 
