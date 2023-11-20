@@ -3,7 +3,7 @@
 #include "file.h"
 #include "logging.h"
 
-#include <nlohmann/json.hpp>
+#include <json.h>
 
 #include <iostream>
 

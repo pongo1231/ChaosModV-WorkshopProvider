@@ -87,7 +87,7 @@
               cp -r ../include $out/
             '';
           };
-        commonBuildInputs = with pkgs; [ openssl zstd sqlite icu sqlitecpp libmicrohttpd libhttpserver dpp elzip ];
+        buildInputs = with pkgs; [ openssl zstd sqlite icu sqlitecpp libmicrohttpd libhttpserver dpp elzip ];
       in
       {
         packages = {
@@ -97,9 +97,9 @@
 
             src = nixpkgs.lib.cleanSource ./.;
 
-            nativeBuildInputs = with pkgs; [ cmake nlohmann_json ];
+            nativeBuildInputs = with pkgs; [ cmake ];
 
-            buildInputs = commonBuildInputs;
+            inherit buildInputs;
 
             cmakeFlags = [ "-DUSE_SYSTEM_LIBS=1" ];
 
@@ -116,7 +116,7 @@
           default = pkgs.mkShell {
             packages = with pkgs; [ cmake ninja gcc pkg-config autoconf automake libtool ];
 
-            buildInputs = commonBuildInputs ++ [ pkgs.nlohmann_json ];
+            inherit buildInputs;
           };
         };
       });
