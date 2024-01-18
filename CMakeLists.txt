@@ -55,9 +55,9 @@ else()
         UPDATE_DISCONNECTED true
         BUILD_IN_SOURCE true
         CONFIGURE_COMMAND ./bootstrap COMMAND mkdir -p build COMMAND cd build
-            COMMAND env CXXFLAGS=-I${CMAKE_CURRENT_BINARY_DIR}/include/\ -L${CMAKE_CURRENT_BINARY_DIR}/lib ../configure --prefix=${CMAKE_CURRENT_BINARY_DIR} --disable-examples # One of the examples fails to build
-        BUILD_COMMAND cd build COMMAND ${MAKE_EXECUTABLE} -j${nproc}
-        INSTALL_COMMAND cd build COMMAND ${MAKE_EXECUTABLE} install
+            COMMAND cd build && env CXXFLAGS=-I${CMAKE_CURRENT_BINARY_DIR}/include/\ -L${CMAKE_CURRENT_BINARY_DIR}/lib ../configure --prefix=${CMAKE_CURRENT_BINARY_DIR} --disable-examples # One of the examples fails to build
+        BUILD_COMMAND cd build && ${MAKE_EXECUTABLE} -j${nproc}
+        INSTALL_COMMAND cd build && ${MAKE_EXECUTABLE} install
     )
     ExternalProject_Get_Property(libhttpserver SOURCE_DIR)
     set(INCLUDE_DIRS ${INCLUDE_DIRS} ${SOURCE_DIR}/src)
