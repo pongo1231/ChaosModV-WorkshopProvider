@@ -6,18 +6,31 @@
   };
 
   outputs = { self, nixpkgs, flake-utils }:
+    let
+      readData = file:
+        let
+          data = nixpkgs.lib.splitString "\n" (builtins.readFile file);
+        in
+        {
+          version = builtins.elemAt data 0;
+          hash = builtins.elemAt data 1;
+        };
+    in
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        libhttpserver = pkgs.stdenv.mkDerivation
-          rec {
+        libhttpserver =
+          let
+            data = readData ./vendor/libhttpserver.txt;
+          in
+          pkgs.stdenv.mkDerivation (finalAttrs: {
             pname = "libhttpserver";
-            version = "0.19.0";
+            version = data.version;
             src = pkgs.fetchFromGitHub {
               owner = "etr";
-              repo = pname;
-              rev = version;
-              hash = "sha256-Pc3Fvd8D4Ymp7dG9YgU58mDceOqNfhWE1JtnpVaNx/Y=";
+              repo = finalAttrs.pname;
+              rev = data.version;
+              hash = data.hash;
             };
 
             nativeBuildInputs = with pkgs; [ autoconf automake libtool ];
@@ -34,31 +47,37 @@
               ./bootstrap
               ./configure --prefix=$out --enable-same-directory-build
             '';
-          };
-        dpp = pkgs.stdenv.mkDerivation
-          rec {
+          });
+        dpp =
+          let
+            data = readData ./vendor/dpp.txt;
+          in
+          pkgs.stdenv.mkDerivation (finalAttrs: {
             pname = "DPP";
-            version = "10.0.26";
+            version = builtins.substring 0 6 data.version;
             src = pkgs.fetchFromGitHub {
               owner = "brainboxdotcc";
-              repo = pname;
-              rev = "v${version}";
-              hash = "sha256-o78ijctDqrONyi8A3+FXvnK9q97B4j1ZIQYNUgl6XJU=";
+              repo = finalAttrs.pname;
+              rev = data.version;
+              hash = data.hash;
             };
 
             nativeBuildInputs = [ pkgs.cmake ];
 
             buildInputs = with pkgs; [ zlib openssl ];
-          };
-        elzip = pkgs.stdenv.mkDerivation
-          rec {
+          });
+        elzip =
+          let
+            data = readData ./vendor/elzip.txt;
+          in
+          pkgs.stdenv.mkDerivation {
             pname = "elzip";
-            version = "516e161d5c96aa8f2603fb30b10b7770a87332c2";
+            version = builtins.substring 0 6 data.version;
             src = pkgs.fetchFromGitHub {
               owner = "Sygmei";
               repo = "11Zip";
-              rev = version;
-              hash = "sha256-F4/ZI+mNWCyCfTjcr6AohlE/mJjYcblMZIkCp2hB6yY=";
+              rev = data.version;
+              hash = data.hash;
             };
 
             nativeBuildInputs = [ pkgs.cmake ];

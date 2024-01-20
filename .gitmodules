@@ -1,9 +1,0 @@
-[submodule "vendor/11zip"]
-	path = vendor/11zip
-	url = https://github.com/Sygmei/11Zip
-[submodule "vendor/dpp"]
-	path = vendor/dpp
-	url = https://github.com/brainboxdotcc/DPP
-[submodule "vendor/sqlitecpp"]
-	path = vendor/sqlitecpp
-	url = https://github.com/SRombauts/SQLiteCpp
