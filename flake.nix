@@ -17,7 +17,7 @@
               owner = "etr";
               repo = pname;
               rev = version;
-              sha256 = "sha256-Pc3Fvd8D4Ymp7dG9YgU58mDceOqNfhWE1JtnpVaNx/Y=";
+              hash = "sha256-Pc3Fvd8D4Ymp7dG9YgU58mDceOqNfhWE1JtnpVaNx/Y=";
             };
 
             nativeBuildInputs = with pkgs; [ autoconf automake libtool ];
@@ -43,7 +43,7 @@
               owner = "brainboxdotcc";
               repo = pname;
               rev = "v${version}";
-              sha256 = "sha256-o78ijctDqrONyi8A3+FXvnK9q97B4j1ZIQYNUgl6XJU=";
+              hash = "sha256-o78ijctDqrONyi8A3+FXvnK9q97B4j1ZIQYNUgl6XJU=";
             };
 
             nativeBuildInputs = [ pkgs.cmake ];
@@ -58,7 +58,7 @@
               owner = "Sygmei";
               repo = "11Zip";
               rev = version;
-              sha256 = "sha256-F4/ZI+mNWCyCfTjcr6AohlE/mJjYcblMZIkCp2hB6yY=";
+              hash = "sha256-F4/ZI+mNWCyCfTjcr6AohlE/mJjYcblMZIkCp2hB6yY=";
             };
 
             nativeBuildInputs = [ pkgs.cmake ];
