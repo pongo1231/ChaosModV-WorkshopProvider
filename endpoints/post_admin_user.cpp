@@ -186,3 +186,46 @@ static std::shared_ptr<http_response> handle_endpoint_admingetuserattributes(con
 }
 
 REGISTER_POST_ENDPOINT("/admin/user/get_attributes", handle_endpoint_admingetuserattributes);
+
+static std::shared_ptr<http_response> handle_endpoint_adminpostwebhook(const http_request &request)
+{
+	COMMON_PROLOGUE
+	COMMON_ADMIN
+
+	auto description = ARG("description");
+	auto fields      = ARG("fields");
+	std::vector<std::pair<std::string, std::string>> fields_list;
+
+	if (!fields.empty())
+	{
+		try
+		{
+			auto fields_json = nlohmann::json::parse(fields);
+			for (const auto &field : fields_json)
+			{
+				if (!field.contains("name") || !field.contains("text"))
+					continue;
+
+				fields_list.emplace_back(field.at("name"), field.at("text"));
+			}
+		}
+		catch (nlohmann::json::exception)
+		{
+			return make_response<string_response>(
+			    json_formulate_failure("Argument 'fields' doesn't specify a json object"), 400);
+		}
+	}
+
+	if (description.empty() && fields_list.empty())
+		return make_response<string_response>(json_formulate_failure("Can't send empty message to webhook!"), 400);
+
+	webhook::send({
+	    .author      = "Admin",
+	    .fields      = fields_list,
+	    .description = description,
+	});
+
+	return make_response<string_response>(json_formulate_success(), 400);
+}
+
+REGISTER_POST_ENDPOINT("/admin/post_webhook", handle_endpoint_adminpostwebhook);
