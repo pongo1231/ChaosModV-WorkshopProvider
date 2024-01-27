@@ -122,12 +122,6 @@ static std::shared_ptr<http_response> handle_endpoint_adminsetuserattribute(cons
 	{
 		for (const auto &token : user::get_user_tokens(user_id))
 			user::erase_token(token);
-
-		webhook::send({
-		    .author      = "Admin",
-		    .fields      = { { "Username", user::get_user_name(user_id) } },
-		    .description = "Account has been suspended",
-		});
 	}
 
 	return make_response<string_response>(json_formulate_success(), 400);
@@ -154,13 +148,6 @@ static std::shared_ptr<http_response> handle_endpoint_adminclearuserattribute(co
 	std::filesystem::create_directories(file::get_data_root() + USER_DIR_FRAGMENT + user_id);
 
 	user::erase_user_attribute(user_id, attribute_name);
-
-	if (attribute_name == "suspended")
-		webhook::send({
-		    .author      = "Admin",
-		    .fields      = { { "Username", user::get_user_name(user_id) } },
-		    .description = "Account has been unsuspended",
-		});
 
 	return make_response<string_response>(json_formulate_success(), 400);
 }
