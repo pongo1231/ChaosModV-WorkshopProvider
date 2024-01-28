@@ -37,3 +37,4 @@ static std::shared_ptr<http_response> handle_endpoint_view(const http_request &r
 }
 
 REGISTER_GET_ENDPOINT("/workshop/view", handle_endpoint_view);
+REGISTER_GET_ENDPOINT("/", handle_endpoint_view);
