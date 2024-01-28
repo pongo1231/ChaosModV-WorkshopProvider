@@ -188,6 +188,9 @@
                 return;
             }
 
+            if (!confirm("Are you sure you want to REMOVE this submission? This is irreversible."))
+                return;
+
             let form_data = new FormData();
             form_data.append("token", token)
             form_data.append("submission_id", submission_id);
