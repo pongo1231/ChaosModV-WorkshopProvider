@@ -29,6 +29,7 @@
     <input id="admin_attribute_name" placeholder="Attribute" autofill="off" autocomplete="off" />
     <input id="admin_attribute_value" placeholder="Value" autofill="off" autocomplete="off" />
     <button onclick="onclick_set_attribute();">Set Attribute</button>
+    <button onclick="onclick_clear_attribute();">Clear Attribute</button>
     <button onclick="onclick_get_attributes();">Get Attributes</button>
     <br>
     <br>
@@ -149,17 +150,27 @@
 
         async function onclick_set_attribute() {
             const attribute = $("#admin_attribute_name").val().trim();
-            const value = $("#admin_attribute_value").val().trim();
             if (attribute == null || attribute === "") {
                 set_status_text("Missing attribute", true);
                 return;
             }
+            const value = $("#admin_attribute_value").val().trim();
             if (value == null || value === "") {
-                set_status_text("Missing value");
+                set_status_text("Missing value", true);
                 return;
             }
 
             await set_user_attribute(attribute, value);
+        }
+
+        async function onclick_clear_attribute() {
+            const attribute = $("#admin_attribute_name").val().trim();
+            if (attribute == null || attribute === "") {
+                set_status_text("Missing attribute", true);
+                return;
+            }
+
+            await clear_user_attribute(attribute);
         }
 
         async function onclick_get_attributes() {
