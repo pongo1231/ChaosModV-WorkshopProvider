@@ -8,7 +8,7 @@ static std::shared_ptr<http_response> handle_endpoint_view(const http_request &r
 	if (token.empty())
 		token = request.get_cookie("user_token");
 
-	if (token.empty() || !user::does_token_exist(token))
+	if (token.empty() || !token::does_token_exist(token))
 		return std::make_shared<string_response>(html_file::read_file("page/workshop/login.html"), 200, "text/html");
 
 	if (args.contains(std::string_view("submission_id")))
@@ -23,7 +23,7 @@ static std::shared_ptr<http_response> handle_endpoint_view(const http_request &r
 			if (!database::exec_steps<std::string, std::string>(
 			        submission::get_database(), "SELECT * FROM submissions WHERE id=@submission_id AND author=@author",
 			        { "@submission_id", submission_id },
-			        { "@author", user::get_user_name(user::get_token_user(token)) }))
+			        { "@author", user::get_user_name(token::get_token_user(token)) }))
 				return std::make_shared<string_response>(html_file::read_file("page/workshop/root.html"), 200,
 				                                         "text/html");
 		}

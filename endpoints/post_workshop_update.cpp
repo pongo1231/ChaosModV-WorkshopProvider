@@ -1,14 +1,10 @@
 #include "endpoint_common.h"
 
-#include "cache.h"
 #include "webhook.h"
 
 #include <elzip/elzip.hpp>
 #include <sys/poll.h>
 #include <zstd.h>
-
-#include <array>
-#include <string_view>
 
 static std::array<int, 2> unpacking_process_pipe;
 
@@ -141,7 +137,7 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 
 	USER_TOKEN_CHECK(submission_id);
 	auto token           = ARG("token");
-	auto user_id         = user::get_token_user(token);
+	auto user_id         = token::get_token_user(token);
 
 	const auto &database = submission::get_database();
 

@@ -1,6 +1,5 @@
 #include "endpoint_common.h"
 
-#include "cache.h"
 #include "webhook.h"
 
 static std::shared_ptr<http_response> handle_endpoint(const http_request &request)
@@ -40,7 +39,7 @@ static std::shared_ptr<http_response> handle_endpoint(const http_request &reques
 	if (!author_user_id.empty())
 		user::erase_user_attribute(author_user_id, submission_id);
 
-	auto user_id = user::get_token_user(token);
+	auto user_id = token::get_token_user(token);
 	webhook::send({
 	    .author = !user::is_user_admin(user_id) ? user::get_user_name(user_id) : "Admin",
 	    .title  = "Submission removed",

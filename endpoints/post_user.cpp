@@ -46,12 +46,12 @@ static std::shared_ptr<http_response> handle_endpoint_userlogin(const http_reque
 			        return;
 		        }
 
-		        const auto &tokens = user::get_user_tokens(user_id);
-		        if (tokens.size() > global_options.user_max_active_tokens)
-			        user::erase_token(tokens[0]);
+		        const auto &tokens = token::get_user_tokens(user_id);
+		        if (tokens.size() >= global_options.user_max_active_tokens)
+			        token::erase_token(tokens[0]);
 
 		        token = util::generate_random_string();
-		        user::set_token_user(token, user_id);
+		        token::add_user_token(user_id, token);
 	        }))
 		return make_response<string_response>(json_formulate_failure("Name not found"), 400);
 
@@ -129,7 +129,7 @@ static std::shared_ptr<http_response> handle_endpoint_userregister(const http_re
 	std::filesystem::create_directories(file::get_data_root() + USER_DIR_FRAGMENT + user_id);
 
 	auto token = util::generate_random_string();
-	user::set_token_user(token, user_id);
+	token::add_user_token(user_id, token);
 
 	return make_response<string_response>(json_formulate_success().set("user_id", user_id).set("token", token), 400);
 }
@@ -144,7 +144,7 @@ static std::shared_ptr<http_response> handle_endpoint_usertokenvalidation(const 
 	if (token.empty())
 		return make_response<string_response>(json_formulate_failure("Missing token"), 400);
 
-	return make_response<string_response>(json_formulate_success().set("token_valid", user::does_token_exist(token)));
+	return make_response<string_response>(json_formulate_success().set("token_valid", token::does_token_exist(token)));
 }
 
 REGISTER_POST_ENDPOINT("/user/token_valid", handle_endpoint_usertokenvalidation);

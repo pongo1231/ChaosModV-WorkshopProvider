@@ -1,7 +1,5 @@
 #include "endpoint_common.h"
 
-#include "cache.h"
-
 static std::shared_ptr<http_response> handle_endpoint_fetchsubmissions(const http_request &request)
 {
 	return make_response<string_response>(cache::fetch_compressed_submissions());

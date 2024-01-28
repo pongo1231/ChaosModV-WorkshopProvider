@@ -24,13 +24,13 @@ namespace submission
 			static SQLite::Database database(file::get_data_root() + SUBMISSIONS_DATABASE,
 			                                 SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE | SQLite::OPEN_FULLMUTEX);
 			database.exec("CREATE TABLE IF NOT EXISTS submissions("
-			              "id          TEXT  PRIMARY KEY NOT NULL,"
-			              "author      TEXT              NOT NULL,"
+			              "id TEXT PRIMARY KEY NOT NULL,"
+			              "author TEXT NOT NULL,"
 			              "description TEXT,"
-			              "lastupdated INT          NOT NULL,"
-			              "name        TEXT              NOT NULL,"
-			              "sha256      TEXT,"
-			              "version     TEXT              NOT NULL)");
+			              "lastupdated INT NOT NULL,"
+			              "name TEXT NOT NULL,"
+			              "sha256 TEXT,"
+			              "version TEXT NOT NULL)");
 			return database;
 		}();
 

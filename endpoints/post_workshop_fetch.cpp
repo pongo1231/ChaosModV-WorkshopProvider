@@ -6,7 +6,7 @@ static std::shared_ptr<http_response> handle_endpoint_fetchusersubmissions(const
 
 	USER_TOKEN_CHECK(std::string());
 	auto token    = ARG("token");
-	auto username = user::get_user_name(user::get_token_user(token));
+	auto username = user::get_user_name(token::get_token_user(token));
 
 	json submissions_json;
 	database::exec_steps<std::string>(

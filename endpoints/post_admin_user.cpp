@@ -7,7 +7,7 @@
 	{                                                                                          \
 		USER_TOKEN_CHECK(std::string());                                                       \
 		auto token = ARG("token");                                                             \
-		if (!user::is_user_admin(user::get_token_user(token)))                                 \
+		if (!user::is_user_admin(token::get_token_user(token)))                                \
 			return make_response<string_response>(json_formulate_failure("Not allowed"), 400); \
 	} while (0);
 
@@ -17,7 +17,7 @@ static std::shared_ptr<http_response> handle_endpoint_admingetusers(const http_r
 	COMMON_ADMIN
 
 	nlohmann::json users_json;
-	database::exec_steps(user::get_database(), "SELECT name,id FROM users",
+	database::exec_steps(user::get_database(), "SELECT name, id FROM users",
 	                     [&](const SQLite::Statement &statement)
 	                     {
 		                     nlohmann::json user_json;
@@ -110,8 +110,7 @@ static std::shared_ptr<http_response> handle_endpoint_adminsetuserattribute(cons
 
 	if (attribute_name == "suspended")
 	{
-		for (const auto &token : user::get_user_tokens(user_id))
-			user::erase_token(token);
+		token::erase_all_user_tokens(user_id);
 	}
 
 	return make_response<string_response>(json_formulate_success(), 400);

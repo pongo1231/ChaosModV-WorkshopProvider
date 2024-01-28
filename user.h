@@ -24,58 +24,13 @@ namespace user
 			static SQLite::Database database(file::get_data_root() + USERS_DATABASE,
 			                                 SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE | SQLite::OPEN_FULLMUTEX);
 			database.exec("CREATE TABLE IF NOT EXISTS users("
-			              "name     TEXT PRIMARY KEY NOT NULL,"
-			              "id       TEXT             NOT NULL,"
-			              "password TEXT             NOT NULL)");
+			              "name TEXT PRIMARY KEY NOT NULL,"
+			              "id TEXT NOT NULL,"
+			              "password TEXT NOT NULL)");
 			return database;
 		}();
 
 		return database;
-	}
-
-	inline std::unordered_map<std::string, std::string> &get_user_tokens()
-	{
-		static std::unordered_map<std::string, std::string> user_tokens;
-		return user_tokens;
-	}
-
-	inline std::string get_token_user(const std::string &token)
-	{
-		const auto &user_tokens = get_user_tokens();
-		if (!user_tokens.contains(token))
-			return {};
-
-		return user_tokens.at(token);
-	}
-
-	inline void set_token_user(const std::string &token, const std::string &user_id)
-	{
-		get_user_tokens()[token] = user_id;
-	}
-
-	inline bool does_token_exist(const std::string &token)
-	{
-		return get_user_tokens().contains(token);
-	}
-
-	inline std::vector<std::string> get_user_tokens(const std::string &user_id)
-	{
-		const auto &user_tokens = get_user_tokens();
-
-		std::vector<std::string> tokens;
-		std::for_each(user_tokens.begin(), user_tokens.end(),
-		              [&](const auto &pair)
-		              {
-			              if (pair.second == user_id)
-				              tokens.push_back(pair.first);
-		              });
-
-		return tokens;
-	}
-
-	inline void erase_token(const std::string &token)
-	{
-		get_user_tokens().erase(token);
 	}
 
 	inline bool does_user_id_exist(const std::string &user_id)
