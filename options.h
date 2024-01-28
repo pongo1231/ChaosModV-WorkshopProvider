@@ -16,9 +16,13 @@ inline struct global_options
 	bool use_tls;
 	size_t connection_timeout;
 	std::string webhook_url;
+	std::string requestor_substitute_header;
 
+	size_t user_max_name_length;
+	size_t user_max_password_length;
 	size_t user_max_submissions;
 	size_t user_max_active_tokens;
+	size_t user_time_between_registrations;
 
 	size_t submission_max_name_length;
 	size_t submission_max_version_length;
@@ -61,9 +65,13 @@ inline struct global_options
 		use_tls                             = get("use_tls");
 		connection_timeout                  = get("connection_timeout");
 		webhook_url                         = get("webhook_url");
+		requestor_substitute_header         = get("requestor_substitute_header");
 
+		user_max_name_length                = get("max_name_length", "user");
+		user_max_password_length            = get("max_password_length", "user");
 		user_max_submissions                = get("max_submissions", "user");
 		user_max_active_tokens              = get("max_active_tokens", "user");
+		user_time_between_registrations     = get("time_between_registrations", "user");
 
 		submission_max_name_length          = get("max_name_length", "submission");
 		submission_max_version_length       = get("max_version_length", "submission");

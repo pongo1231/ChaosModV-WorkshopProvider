@@ -4,9 +4,13 @@
     "use_tls": false,
     "connection_timeout": 60,
     "webhook_url": "",
+    "requestor_substitute_header": "",
     "user": {
+        "max_name_length": 20,
+        "max_password_length": 200,
         "max_submissions": 10,
-        "max_active_tokens": 2
+        "max_active_tokens": 2,
+        "time_between_registrations": 86400
     },
     "submission": {
         "max_name_length": 40,

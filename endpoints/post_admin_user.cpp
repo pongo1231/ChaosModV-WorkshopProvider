@@ -11,44 +11,6 @@
 			return make_response<string_response>(json_formulate_failure("Not allowed"), 400); \
 	} while (0);
 
-static std::shared_ptr<http_response> handle_endpoint_admincreateuser(const http_request &request)
-{
-	COMMON_PROLOGUE
-	COMMON_ADMIN
-
-	auto name = ARG("name");
-	if (name.empty())
-		return make_response<string_response>(json_formulate_failure("Missing name"), 400);
-
-	if (user::does_user_name_exist(name))
-		return make_response<string_response>(json_formulate_failure("Name already in use"), 400);
-
-	auto password = ARG("password");
-	if (password.empty())
-		return make_response<string_response>(json_formulate_failure("Missing password"), 400);
-
-	password = util::sha512(password);
-
-	std::string user_id;
-	while (user_id.empty())
-	{
-		user_id = util::generate_random_string();
-		if (user::does_user_id_exist(user_id))
-			user_id.clear();
-	}
-
-	if (!database::exec<std::string, std::string, std::string>(
-	        user::get_database(), "INSERT INTO users (name, id, password) VALUES (@name, @user_id, @password)",
-	        { "@name", name }, { "@user_id", user_id }, { "@password", password }))
-		return make_response<string_response>(json_formulate_failure("Statement failed"), 400);
-
-	std::filesystem::create_directories(file::get_data_root() + USER_DIR_FRAGMENT + user_id);
-
-	return make_response<string_response>(json_formulate_success().set("user_id", user_id), 400);
-}
-
-REGISTER_POST_ENDPOINT("/admin/user/create", handle_endpoint_admincreateuser);
-
 static std::shared_ptr<http_response> handle_endpoint_admingetuserid(const http_request &request)
 {
 	COMMON_PROLOGUE

@@ -94,9 +94,9 @@ if (NOT USE_SYSTEM_LIBS)
     set(INCLUDE_DIRS ${INCLUDE_DIRS}
         ${libmicrohttpd_install}/include
         ${libhttpserver_install}/include
-        ${PROJECT_SOURCE_DIR}/vendor/sqlitecpp/include
-        ${PROJECT_SOURCE_DIR}/vendor/sqlitecpp/include
-        ${PROJECT_SOURCE_DIR}/vendor/11zip/include)
+        ${PROJECT_SOURCE_DIR}/vendor/11zip/include
+        ${PROJECT_SOURCE_DIR}/vendor/dpp/include
+        ${PROJECT_SOURCE_DIR}/vendor/sqlitecpp/include)
 endif()
 target_include_directories(chaosworkshop BEFORE PRIVATE ${INCLUDE_DIRS})
 

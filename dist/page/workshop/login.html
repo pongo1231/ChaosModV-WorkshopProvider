@@ -19,6 +19,7 @@
         <br>
         <br>
         <button id="user_login" onclick="onclick_login(); return false;">Login</button>
+        <button id="user_register" onclick="onclick_register(); return false;">Register</button>
         <p id="user_error_text" style="color:red" hidden></p>
     </form>
 
@@ -32,17 +33,18 @@
             });
         }
 
-        async function onclick_login() {
+        async function get_attributes() {
             const name = $("#user_name").val();
             const password = $("#user_password").val();
             const hashed_password = await sha512(password);
 
-            let form_data = new FormData();
-            form_data.append("name", name);
-            form_data.append("password", hashed_password);
-            const response = await fetch("$$domain$$/user/login", { method: "POST", body: form_data });
-            const json = await response.json();
+            return {
+                name: name,
+                hashed_password: hashed_password
+            };
+        }
 
+        function common_handler_epilogue(json) {
             if (json["success"] == null || !json["success"]) {
                 $("#user_error_text").show();
                 $("#user_error_text").text("ERROR: " + json["reason"]);
@@ -52,6 +54,30 @@
             document.cookie = "user_token=" + json["token"] + ";path=/";
             console.log(json["token"]);
             location.reload();
+        }
+
+        async function onclick_login() {
+            const attrs = await get_attributes();
+
+            let form_data = new FormData();
+            form_data.append("name", attrs.name);
+            form_data.append("password", attrs.hashed_password);
+
+            const response = await fetch("$$domain$$/user/login", { method: "POST", body: form_data });
+            const json = await response.json();
+            common_handler_epilogue(json);
+        }
+
+        async function onclick_register() {
+            const attrs = await get_attributes();
+
+            let form_data = new FormData();
+            form_data.append("name", attrs.name);
+            form_data.append("password", attrs.hashed_password);
+
+            const response = await fetch("$$domain$$/user/register", { method: "POST", body: form_data });
+            const json = await response.json();
+            common_handler_epilogue(json);
         }
     </script>
 </body>
