@@ -81,6 +81,12 @@ static std::shared_ptr<http_response> handle_endpoint_userregister(const http_re
 	if (name.empty())
 		return make_response<string_response>(json_formulate_failure("Missing name"), 400);
 
+	if (name.length() < global_options.user_min_name_length)
+		return make_response<string_response>(
+		    json_formulate_failure("Name too short (min " + std::to_string(global_options.user_min_name_length)
+		                           + " characters)"),
+		    400);
+
 	if (name.length() > global_options.user_max_name_length)
 		return make_response<string_response>(
 		    json_formulate_failure("Name too long (max " + std::to_string(global_options.user_max_name_length)

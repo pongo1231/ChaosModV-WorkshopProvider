@@ -6,6 +6,7 @@
     "webhook_url": "",
     "requestor_substitute_header": "",
     "user": {
+        "user_min_name_length": 3,
         "max_name_length": 20,
         "max_password_length": 200,
         "max_submissions": 10,

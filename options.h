@@ -18,6 +18,7 @@ inline struct global_options
 	std::string webhook_url;
 	std::string requestor_substitute_header;
 
+	size_t user_min_name_length;
 	size_t user_max_name_length;
 	size_t user_max_password_length;
 	size_t user_max_submissions;
@@ -67,6 +68,7 @@ inline struct global_options
 		webhook_url                         = get("webhook_url");
 		requestor_substitute_header         = get("requestor_substitute_header");
 
+		user_min_name_length                = get("min_name_length", "user");
 		user_max_name_length                = get("max_name_length", "user");
 		user_max_password_length            = get("max_password_length", "user");
 		user_max_submissions                = get("max_submissions", "user");
