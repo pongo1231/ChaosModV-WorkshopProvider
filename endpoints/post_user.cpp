@@ -109,9 +109,7 @@ static std::shared_ptr<http_response> handle_endpoint_userregister(const http_re
 		                           + " characters)"),
 		    400);
 
-	password                               = util::sha512(password);
-
-	requestor_last_registration[requestor] = time;
+	password = util::sha512(password);
 
 	std::string user_id;
 	while (user_id.empty())
@@ -125,6 +123,8 @@ static std::shared_ptr<http_response> handle_endpoint_userregister(const http_re
 	        user::get_database(), "INSERT INTO users (name, id, password) VALUES (@name, @user_id, @password)",
 	        { "@name", name }, { "@user_id", user_id }, { "@password", password }))
 		return make_response<string_response>(json_formulate_failure("Statement failed"), 400);
+
+	requestor_last_registration[requestor] = time;
 
 	std::filesystem::create_directories(file::get_data_root() + USER_DIR_FRAGMENT + user_id);
 
