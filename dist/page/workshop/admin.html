@@ -18,6 +18,9 @@
 
     <h2>We do the funny</h2>
     <p class="small">User</p>
+    <button onclick="onclick_get_all_users();">Get all users</button>
+    <br>
+    <br>
     <input id="admin_username" placeholder="Username" autofill="off" autocomplete="off" />
     <button onclick="set_user_attribute('suspended', true);">Suspend</button>
     <button onclick="clear_user_attribute('suspended');">Unsuspend</button>
@@ -128,6 +131,19 @@
 
             if (handle_json_response_error(json))
                 set_status_text(`Attribute ${attribute} has been cleared for user ${username} (id ${user_id})`);
+        }
+
+        async function onclick_get_all_users() {
+            const token = get_cookie("user_token");
+
+            let form_data = new FormData();
+            form_data.append("token", token)
+
+            const response = await fetch("$$domain$$/admin/user/get_users", { method: "POST", body: form_data });
+            const json = await response.json();
+
+            if (handle_json_response_error(json))
+                set_status_text(`Users: ${JSON.stringify(json["users"], null, 2)}`);
         }
 
         async function onclick_set_attribute() {
