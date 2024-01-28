@@ -11,6 +11,27 @@
 			return make_response<string_response>(json_formulate_failure("Not allowed"), 400); \
 	} while (0);
 
+static std::shared_ptr<http_response> handle_endpoint_admingetusers(const http_request &request)
+{
+	COMMON_PROLOGUE
+	COMMON_ADMIN
+
+	nlohmann::json users_json;
+	database::exec_steps(user::get_database(), "SELECT name,id FROM users",
+	                     [&](const SQLite::Statement &statement)
+	                     {
+		                     nlohmann::json user_json;
+		                     for (int i = 0; i < statement.getColumnCount(); i++)
+			                     user_json[statement.getColumnName(i)] = statement.getColumn(i);
+
+		                     users_json.push_back(user_json);
+	                     });
+
+	return make_response<string_response>(json_formulate_success().set("users", users_json), 400);
+}
+
+REGISTER_POST_ENDPOINT("/admin/user/get_users", handle_endpoint_admingetusers);
+
 static std::shared_ptr<http_response> handle_endpoint_admingetuserid(const http_request &request)
 {
 	COMMON_PROLOGUE
