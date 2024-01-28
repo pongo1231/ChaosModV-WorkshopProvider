@@ -199,7 +199,7 @@
             const response = await fetch("$$domain$$/workshop/fetch_submissions?uncompressed=yes", { method: "GET" });
             const json = await response.json();
 
-            set_status_text(`Submissions: ${JSON.stringify(json, null, 2)}`);
+            set_status_text(`Submissions: ${JSON.stringify(json["submissions"], null, 2)}`);
         }
 
         async function onclick_get_submission_info() {
