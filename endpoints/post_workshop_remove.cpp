@@ -1,5 +1,6 @@
 #include "endpoint_common.h"
 
+#include "cache.h"
 #include "webhook.h"
 
 static std::shared_ptr<http_response> handle_endpoint(const http_request &request)

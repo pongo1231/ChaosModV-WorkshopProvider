@@ -1,5 +1,6 @@
 #include "endpoint_common.h"
 
+#include "cache.h"
 #include "webhook.h"
 
 #include <elzip/elzip.hpp>
