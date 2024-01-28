@@ -18,7 +18,7 @@
 
     <h2>We do the funny</h2>
     <p class="small">User</p>
-    <button onclick="onclick_get_all_users();">Get all users</button>
+    <button onclick="onclick_get_all_users();">Get All Users</button>
     <br>
     <br>
     <input id="admin_username" placeholder="Username" autofill="off" autocomplete="off" />
@@ -34,6 +34,9 @@
     <br>
     <br>
     <p class="small">Submission</p>
+    <button onclick="onclick_get_all_submissions();">Get All Submissions</button>
+    <br>
+    <br>
     <input id="admin_submissionid" placeholder="Submission ID" autofill="off" autocomplete="off" />
     <button onclick="onclick_get_submission_info();">Get Info</button>
     <button onclick="onclick_remove_submission();">Remove</button>
@@ -139,7 +142,7 @@
             const token = get_cookie("user_token");
 
             let form_data = new FormData();
-            form_data.append("token", token)
+            form_data.append("token", token);
 
             const response = await fetch("$$domain$$/admin/user/get_users", { method: "POST", body: form_data });
             const json = await response.json();
@@ -192,8 +195,14 @@
                 set_status_text(`Attributes: ${JSON.stringify(json["attributes"], null, 2)}`);
         }
 
+        async function onclick_get_all_submissions() {
+            const response = await fetch("$$domain$$/workshop/fetch_submissions?uncompressed=yes", { method: "GET" });
+            const json = await response.json();
+
+            set_status_text(`Submissions: ${JSON.stringify(json, null, 2)}`);
+        }
+
         async function onclick_get_submission_info() {
-            const token = get_cookie("user_token");
             const submission_id = $("#admin_submissionid").val().trim();
             if (submission_id == null || submission_id === "") {
                 set_status_text("Missing submission id", true);
