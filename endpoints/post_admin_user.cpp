@@ -61,9 +61,16 @@ static std::shared_ptr<http_response> handle_endpoint_adminsetuserpassword(const
 	if (!user::does_user_id_exist(user_id))
 		return make_response<string_response>(json_formulate_failure("User doesn't exist"), 400);
 
+	// Same semantics as registration where the password is hashed with sha512 both on client and server
 	auto password = ARG("password");
-	if (password.empty())
-		return make_response<string_response>(json_formulate_failure("Missing password"), 400);
+	if (!password.empty())
+		password = util::sha512(password);
+	else
+	{
+		password = ARG("raw_password");
+		if (password.empty())
+			return make_response<string_response>(json_formulate_failure("Missing password"), 400);
+	}
 
 	password = util::sha512(password);
 
