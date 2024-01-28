@@ -70,6 +70,6 @@ namespace token
 	inline bool erase_all_user_tokens(const std::string &user_id)
 	{
 		return database::exec<std::string>(get_database(), "DELETE FROM tokens WHERE id=@user_id",
-		                                   { "@token", user_id });
+		                                   { "@user_id", user_id });
 	}
 }

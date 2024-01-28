@@ -2,15 +2,6 @@
 
 #include "webhook.h"
 
-#define COMMON_ADMIN                                                                           \
-	do                                                                                         \
-	{                                                                                          \
-		USER_TOKEN_CHECK(std::string());                                                       \
-		auto token = ARG("token");                                                             \
-		if (!user::is_user_admin(token::get_token_user(token)))                                \
-			return make_response<string_response>(json_formulate_failure("Not allowed"), 400); \
-	} while (0);
-
 static std::shared_ptr<http_response> handle_endpoint_admingetusers(const http_request &request)
 {
 	COMMON_PROLOGUE
@@ -27,7 +18,7 @@ static std::shared_ptr<http_response> handle_endpoint_admingetusers(const http_r
 		                     users_json.push_back(user_json);
 	                     });
 
-	return make_response<string_response>(json_formulate_success().set("users", users_json), 400);
+	return make_response<string_response>(json_formulate_success().set("users", users_json));
 }
 
 REGISTER_POST_ENDPOINT("/admin/user/get_users", handle_endpoint_admingetusers);
@@ -44,7 +35,7 @@ static std::shared_ptr<http_response> handle_endpoint_admingetuserid(const http_
 	if (!user::does_user_name_exist(user_name))
 		return make_response<string_response>(json_formulate_failure("User doesn't exist"), 400);
 
-	return make_response<string_response>(json_formulate_success().set("user_id", user::get_user_id(user_name)), 400);
+	return make_response<string_response>(json_formulate_success().set("user_id", user::get_user_id(user_name)));
 }
 
 REGISTER_POST_ENDPOINT("/admin/user/get_id", handle_endpoint_admingetuserid);
@@ -79,7 +70,7 @@ static std::shared_ptr<http_response> handle_endpoint_adminsetuserpassword(const
 	                                              { "@password", password }, { "@user_id", user_id }))
 		return make_response<string_response>(json_formulate_failure("Statement failed"), 400);
 
-	return make_response<string_response>(json_formulate_success(), 400);
+	return make_response<string_response>(json_formulate_success());
 }
 
 REGISTER_POST_ENDPOINT("/admin/user/set_password", handle_endpoint_adminsetuserpassword);
@@ -109,11 +100,9 @@ static std::shared_ptr<http_response> handle_endpoint_adminsetuserattribute(cons
 	user::set_user_attribute(user_id, attribute_name, attribute_value);
 
 	if (attribute_name == "suspended")
-	{
 		token::erase_all_user_tokens(user_id);
-	}
 
-	return make_response<string_response>(json_formulate_success(), 400);
+	return make_response<string_response>(json_formulate_success());
 }
 
 REGISTER_POST_ENDPOINT("/admin/user/set_attribute", handle_endpoint_adminsetuserattribute);
@@ -138,7 +127,7 @@ static std::shared_ptr<http_response> handle_endpoint_adminclearuserattribute(co
 
 	user::erase_user_attribute(user_id, attribute_name);
 
-	return make_response<string_response>(json_formulate_success(), 400);
+	return make_response<string_response>(json_formulate_success());
 }
 
 REGISTER_POST_ENDPOINT("/admin/user/clear_attribute", handle_endpoint_adminclearuserattribute);
@@ -155,10 +144,7 @@ static std::shared_ptr<http_response> handle_endpoint_admingetuserattributes(con
 	if (!user::does_user_id_exist(user_id))
 		return make_response<string_response>(json_formulate_failure("User doesn't exist"), 400);
 
-	auto response = json_formulate_success();
-
-	return make_response<string_response>(json_formulate_success().set("attributes", user::get_user_json(user_id)),
-	                                      400);
+	return make_response<string_response>(json_formulate_success().set("attributes", user::get_user_json(user_id)));
 }
 
 REGISTER_POST_ENDPOINT("/admin/user/get_attributes", handle_endpoint_admingetuserattributes);
@@ -201,7 +187,7 @@ static std::shared_ptr<http_response> handle_endpoint_adminpostwebhook(const htt
 	    .description = description,
 	});
 
-	return make_response<string_response>(json_formulate_success(), 400);
+	return make_response<string_response>(json_formulate_success());
 }
 
 REGISTER_POST_ENDPOINT("/admin/post_webhook", handle_endpoint_adminpostwebhook);

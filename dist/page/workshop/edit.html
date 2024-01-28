@@ -14,7 +14,7 @@
 
 <body>
     <h1 id="submission_title">New Submission</h1>
-    <button onclick="onclick_back()">Back</button>
+    <button onclick="onclick_back();">Back</button>
 
     <h2>Name</h2>
     <p class="small">- Must not contain more than 40 characters</p>
@@ -47,11 +47,11 @@
     <input id="submission_datafile" type="file" accept=".zip" autocomplete="off" />
     <br>
     <br>
-    <button id="submission_create" onclick="onclick_update()">Create</button>
+    <button id="submission_create" onclick="onclick_update();">Create</button>
     <p id="submission_error_text" style="color:red" hidden></p>
     <br>
     <br>
-    <button id="submission_remove" onclick="onclick_remove()" hidden>Remove</button>
+    <button id="submission_remove" onclick="onclick_remove();" hidden>Remove</button>
 
     <script>
         const submission_id = $$submission_id$$;
@@ -95,7 +95,7 @@
 
             if (json["success"] == null || !json["success"]) {
                 $("#submission_error_text").show();
-                $("#submission_error_text").text("ERROR: " + json["reason"]);
+                $("#submission_error_text").text(`ERROR: ${json["reason"]}`);
                 return;
             }
 
@@ -125,7 +125,7 @@
 
             if (json["success"] == null || !json["success"]) {
                 $("#submission_error_text").show();
-                $("#submission_error_text").text("ERROR: " + json["reason"]);
+                $("#submission_error_text").text(`ERROR: ${json["reason"]}`);
                 return;
             }
 
@@ -140,7 +140,7 @@
             $("#submission_create").text("Update");
             $("#submission_remove").show();
 
-            const response = await fetch("$$domain$$/workshop/fetch_submission?submission_id=" + submission_id, { method: "GET" });
+            const response = await fetch(`$$domain$$/workshop/fetch_submission?submission_id=${submission_id}`, { method: "GET" });
             const json = await response.json();
 
             if (json["success"] == null || json["submission"] == null)

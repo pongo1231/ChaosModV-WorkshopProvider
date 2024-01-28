@@ -1,15 +1,14 @@
 #include "endpoint_common.h"
 
+#define COMMON_VIEW                                       \
+	auto token = TOKEN;                                   \
+	if (token.empty() || !token::does_token_exist(token)) \
+		return std::make_shared<string_response>(html_file::read_file("page/workshop/login.html"), 200, "text/html");
+
 static std::shared_ptr<http_response> handle_endpoint_view(const http_request &request)
 {
 	COMMON_PROLOGUE
-
-	auto token = ARG("token");
-	if (token.empty())
-		token = request.get_cookie("user_token");
-
-	if (token.empty() || !token::does_token_exist(token))
-		return std::make_shared<string_response>(html_file::read_file("page/workshop/login.html"), 200, "text/html");
+	COMMON_VIEW
 
 	if (args.contains(std::string_view("submission_id")))
 	{
@@ -38,3 +37,14 @@ static std::shared_ptr<http_response> handle_endpoint_view(const http_request &r
 
 REGISTER_GET_ENDPOINT("/workshop/view", handle_endpoint_view);
 REGISTER_GET_ENDPOINT("/", handle_endpoint_view);
+
+static std::shared_ptr<http_response> handle_endpoint_adminview(const http_request &request)
+{
+	COMMON_PROLOGUE
+	COMMON_VIEW
+	COMMON_ADMIN
+
+	return std::make_shared<string_response>(html_file::read_file("page/workshop/admin.html"), 200, "text/html");
+}
+
+REGISTER_GET_ENDPOINT("/workshop/admin", handle_endpoint_adminview);

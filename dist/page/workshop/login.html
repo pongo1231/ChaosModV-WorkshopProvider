@@ -47,11 +47,11 @@
         function common_handler_epilogue(json) {
             if (json["success"] == null || !json["success"]) {
                 $("#user_error_text").show();
-                $("#user_error_text").text("ERROR: " + json["reason"]);
+                $("#user_error_text").text(`ERROR: ${json["reason"]}`);
                 return;
             }
 
-            document.cookie = "user_token=" + json["token"] + ";path=/";
+            document.cookie = `user_token=${json["token"]};path=/`;
             console.log(json["token"]);
             location.reload();
         }

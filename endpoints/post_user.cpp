@@ -131,7 +131,7 @@ static std::shared_ptr<http_response> handle_endpoint_userregister(const http_re
 	auto token = util::generate_random_string();
 	token::add_user_token(user_id, token);
 
-	return make_response<string_response>(json_formulate_success().set("user_id", user_id).set("token", token), 400);
+	return make_response<string_response>(json_formulate_success().set("user_id", user_id).set("token", token));
 }
 
 REGISTER_POST_ENDPOINT("/user/register", handle_endpoint_userregister);

@@ -144,9 +144,6 @@ namespace user
 
 	inline bool can_user_modify_submission(const std::string &user_id, const std::string &submission_id)
 	{
-		if (is_user_admin(user_id))
-			return true;
-
-		return get_user_attribute(user_id, "submissions").contains(submission_id);
+		return is_user_admin(user_id) || get_user_attribute(user_id, "submissions").contains(submission_id);
 	}
 }

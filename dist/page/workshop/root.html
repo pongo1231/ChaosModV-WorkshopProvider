@@ -11,12 +11,12 @@
 
 <body>
     <h1>Your Submissions</h1>
-    <button id="submission_createnew" onclick="onclick_new()" hidden>Create New</button>
+    <button id="submission_createnew" onclick="onclick_new();" hidden>Create New</button>
     <br>
 
     <br id="submissions_anchor">
     <br>
-    <button onclick="onclick_logout()">Logout</button>
+    <button onclick="onclick_logout();">Logout</button>
 
     <script>
         function get_cookie(name) {
@@ -45,7 +45,7 @@
         }
 
         async function onclick_download(submission_id) {
-            const result = await fetch("$$domain$$/workshop/fetch_submission_data?uncompressed=yes&submission_id=" + submission_id, { method: "GET" });
+            const result = await fetch(`$$domain$$/workshop/fetch_submission_data?uncompressed=yes&submission_id=${submission_id}`, { method: "GET" });
             const is_compressed = result.headers.get("compressed") == "yes";
 
             const blob = await result.blob();
@@ -57,7 +57,7 @@
         }
 
         function onclick_edit(submission_id) {
-            location.href = "$$domain$$/workshop/view?submission_id=" + submission_id;
+            location.href = `$$domain$$/workshop/view?submission_id=${submission_id}`;
         }
 
         function onclick_logout() {
@@ -84,12 +84,12 @@
             const submission_entries = Object.entries(json["submissions"]);
             for (const [submission_id, submission_data] of submission_entries) {
                 $("<hr>").insertBefore("#submissions_anchor");
-                $("<p>Name: " + submission_data.name + "</p>").insertBefore("#submissions_anchor");
-                $("<p>Version: v" + submission_data.version + "</p>").insertBefore("#submissions_anchor");
-                $("<p>Description: " + (submission_data.description != null ? submission_data.description : "No Description") + "</p>").insertBefore("#submissions_anchor");
-                $("<p>Last updated: " + time_to_date(submission_data.lastupdated) + "</p>").insertBefore("#submissions_anchor");
-                $("<button onclick='onclick_download(\"" + submission_id + "\")'>Download</button>").insertBefore("#submissions_anchor");
-                $("<button onclick='onclick_edit(\"" + submission_id + "\")'>Edit</button>").insertBefore("#submissions_anchor");
+                $(`<p>Name: ${submission_data.name}</p>`).insertBefore("#submissions_anchor");
+                $(`<p>Version: v${submission_data.version}</p>`).insertBefore("#submissions_anchor");
+                $(`<p>Description: ${(submission_data.description != null ? submission_data.description : "No Description")}</p>`).insertBefore("#submissions_anchor");
+                $(`<p>Last updated: ${time_to_date(submission_data.lastupdated)}</p>`).insertBefore("#submissions_anchor");
+                $(`<button onclick='onclick_download(\"${submission_id}\");'>Download</button>`).insertBefore("#submissions_anchor");
+                $(`<button onclick='onclick_edit(\"${submission_id}\");'>Edit</button>`).insertBefore("#submissions_anchor");
             }
 
             if (submission_entries.length < 10)
