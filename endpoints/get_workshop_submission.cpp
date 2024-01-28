@@ -2,7 +2,24 @@
 
 static std::shared_ptr<http_response> handle_endpoint_fetchsubmissions(const http_request &request)
 {
-	return make_response<string_response>(cache::fetch_compressed_submissions());
+	COMMON_PROLOGUE
+
+	const auto &submissions_json = cache::fetch_compressed_submissions();
+
+	if (ARG("uncompressed") == "yes")
+	{
+		std::string uncompressed_buffer;
+		uncompressed_buffer.resize(submissions_json.size() * 10.f);
+		auto uncompressed_size = ZSTD_decompress(uncompressed_buffer.data(), uncompressed_buffer.size(),
+		                                         submissions_json.data(), submissions_json.size());
+		uncompressed_buffer.resize(uncompressed_size);
+
+		auto response = make_response<string_response>(uncompressed_buffer);
+		response->with_header("compressed", "no");
+		return response;
+	}
+
+	return make_response<string_response>(submissions_json);
 }
 
 REGISTER_GET_ENDPOINT("/workshop/fetch_submissions", handle_endpoint_fetchsubmissions);
@@ -41,7 +58,7 @@ static std::shared_ptr<http_response> handle_endpoint_fetchsubmissiondata(const 
 		// just to safeguard in case file size is above submission_max_total_size
 		uncompressed_buffer.resize(compressed.size() < global_options.submission_max_total_size
 		                               ? global_options.submission_max_total_size
-		                               : compressed.size() * 2);
+		                               : compressed.size() * 2.f);
 		auto uncompressed_size = ZSTD_decompress(uncompressed_buffer.data(), uncompressed_buffer.size(),
 		                                         compressed.data(), compressed.size());
 		uncompressed_buffer.resize(uncompressed_size);
