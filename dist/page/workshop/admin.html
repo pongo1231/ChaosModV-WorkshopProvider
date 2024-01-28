@@ -113,8 +113,10 @@
             const token = get_cookie("user_token");
             const username = $("#admin_username").val().trim();
             const user_id = await get_user_id();
-            if (user_id == null)
+            if (user_id == null) {
+                set_status_text("Invalid username", true);
                 return;
+            }
 
             let form_data = new FormData();
             form_data.append("token", token)
