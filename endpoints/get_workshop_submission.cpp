@@ -4,14 +4,15 @@ static std::shared_ptr<http_response> handle_endpoint_fetchsubmissions(const htt
 {
 	COMMON_PROLOGUE
 
-	const auto &submissions_json = cache::fetch_compressed_submissions();
+	const auto &submissions = cache::fetch_compressed_submissions();
 
 	if (ARG("uncompressed") == "yes")
 	{
 		std::string uncompressed_buffer;
-		uncompressed_buffer.resize(submissions_json.size() * 10.f);
-		auto uncompressed_size = ZSTD_decompress(uncompressed_buffer.data(), uncompressed_buffer.size(),
-		                                         submissions_json.data(), submissions_json.size());
+		uncompressed_buffer.resize(submissions.compressed_submissions.size() * 10.f);
+		auto uncompressed_size =
+		    ZSTD_decompress(uncompressed_buffer.data(), uncompressed_buffer.size(),
+		                    submissions.compressed_submissions.data(), submissions.compressed_submissions.size());
 		uncompressed_buffer.resize(uncompressed_size);
 
 		auto response = make_response<string_response>(uncompressed_buffer);
@@ -19,10 +20,21 @@ static std::shared_ptr<http_response> handle_endpoint_fetchsubmissions(const htt
 		return response;
 	}
 
-	return make_response<string_response>(submissions_json);
+	return make_response<string_response>(submissions.compressed_submissions);
 }
 
 REGISTER_GET_ENDPOINT("/workshop/fetch_submissions", handle_endpoint_fetchsubmissions);
+
+static std::shared_ptr<http_response> handle_endpoint_fetchsubmissionshash(const http_request &request)
+{
+	COMMON_PROLOGUE
+
+	const auto &submissions = cache::fetch_compressed_submissions();
+
+	return make_response<string_response>(submissions.sha256);
+}
+
+REGISTER_GET_ENDPOINT("/workshop/fetch_submissionshash", handle_endpoint_fetchsubmissionshash);
 
 static std::shared_ptr<http_response> handle_endpoint_fetchsubmissiondata(const http_request &request)
 {

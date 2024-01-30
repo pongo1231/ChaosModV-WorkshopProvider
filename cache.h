@@ -3,6 +3,7 @@
 #include "database.h"
 #include "file.h"
 #include "submission.h"
+#include "util.h"
 
 #include <json.h>
 #include <zstd.h>
@@ -17,14 +18,24 @@ namespace cache
 	inline std::unordered_map<std::string, std::string> file_caches;
 	inline std::unordered_map<std::string, std::mutex> file_mutexes;
 
-	inline std::string fetch_compressed_submissions()
+	struct submissions_result
+	{
+		const std::string &compressed_submissions;
+		const std::string &sha256;
+	};
+	inline submissions_result fetch_compressed_submissions()
 	{
 		std::lock_guard lock(file_mutexes[SUBMISSIONS_DATABASE]);
 
-		auto &submission_cache = file_caches[SUBMISSIONS_DATABASE];
+		auto &submission_cache    = file_caches[SUBMISSIONS_DATABASE];
+
+		static std::string sha256 = util::sha256(submission_cache);
 
 		if (!submission_cache.empty())
-			return submission_cache;
+			return {
+				.compressed_submissions = submission_cache,
+				.sha256                 = sha256,
+			};
 
 		// lazy update cache
 
@@ -52,7 +63,12 @@ namespace cache
 
 		submission_cache.resize(compressed_size);
 
-		return submission_cache;
+		sha256 = util::sha256(submission_cache);
+
+		return {
+			.compressed_submissions = submission_cache,
+			.sha256                 = sha256,
+		};
 	}
 
 	inline void invalidate_submissions_cache()
