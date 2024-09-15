@@ -60,7 +60,7 @@ namespace user
 	inline std::string get_user_id(const std::string &user_name)
 	{
 		std::string result;
-		database::exec_steps<std::string>(get_database(), "SELECT id FROM users WHERE name=@user_name",
+		database::exec_steps<std::string>(get_database(), "SELECT id FROM users WHERE UPPER(name)=UPPER(@user_name)",
 		                                  { "@user_name", user_name },
 		                                  [&](const SQLite::Statement &statement)
 		                                  {
