@@ -53,7 +53,7 @@ namespace user
 
 	inline bool does_user_name_exist(const std::string &user_name)
 	{
-		return database::exec_steps<std::string>(get_database(), "SELECT 1 FROM users WHERE name=@user_name",
+		return database::exec_steps<std::string>(get_database(), "SELECT 1 FROM users WHERE UPPER(name)=UPPER(@user_name)",
 		                                         { "@user_name", user_name });
 	}
 
