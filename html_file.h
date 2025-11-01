@@ -26,8 +26,7 @@ namespace html_file
 			}
 		};
 
-		static std::string fullDomain = (global_options.use_tls ? "https://" : "http://") + global_options.domain;
-		find_and_replace("$$domain$$", fullDomain);
+		find_and_replace("$$domain$$", global_options.domain);
 
 		for (const auto &replacement : additional_replacements)
 			find_and_replace(replacement.first, replacement.second);
